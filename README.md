@@ -1,6 +1,7 @@
 
 # Environment Vairable creation
-create a .env file in the root with following balues
+create a .env file in the root with following values
+1. Go to Root Folder of travelease
 ```
 API_MODE=huggingface  # or 'bedrock' for production
 # This is for solving SSL Errors because of VPN
@@ -20,7 +21,7 @@ GOOGLE_MAPS_API_KEY=your_api_key
 ANTHROPIC_API_KEY=your_api_key
 ```
 # Install dependencies
-Go to travelease root forlder
+2. Go to travelease root forlder
 ```
 pip install -r /path/to/requirements.txt 
 streamlit run app.py
