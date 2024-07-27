@@ -1,4 +1,4 @@
-```markdown
+
 # Voyage Travel Assistant
 
 Voyage is a virtual travel assistant built using Streamlit. It helps users with travel-related queries and tasks, providing concise and helpful responses while maintaining a friendly and professional tone. The assistant uses user profile information, including past and upcoming trips, credit card offers, and user preferences, to provide personalized recommendations and references.
