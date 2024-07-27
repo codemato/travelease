@@ -4,41 +4,39 @@
 Voyage is a virtual travel assistant built using Streamlit. It helps users with travel-related queries and tasks, providing concise and helpful responses while maintaining a friendly and professional tone. The assistant uses user profile information, including past and upcoming trips, credit card offers, and user preferences, to provide personalized recommendations and references.
 
 ## Table of Contents
-- [Getting Started](#getting-started)
-- [App Structure](#app-structure)
-  - [Modules](#modules)
-    - [app.py](#apppy)
-    - [auth.py](#authpy)
-    - [chat.py](#chatpy)
-    - [config.py](#configpy)
-    - [map_utils.py](#map_utilspy)
-    - [google_reviews.py](#google_reviewspy)
-    - [ui_components.py](#ui_componentspy)
-    - [api_client.py](#api_clientpy)
-- [Usage](#usage)
-- [Configuration](#configuration)
-- [Contributing](#contributing)
-- [License](#license)
+
+1. [Getting Started](#getting-started)
+2. [App Structure](#app-structure)
+3. [Modules](#modules)
+    - [app.py](#app-py)
+    - [auth.py](#auth-py)
+    - [chat.py](#chat-py)
+    - [config.py](#config-py)
+    - [map_utils.py](#map-utils-py)
+    - [google_reviews.py](#google-reviews-py)
+    - [ui_components.py](#ui-components-py)
+    - [api_client.py](#api-client-py)
+4. [Usage](#usage)
+5. [Configuration](#configuration)
+6. [Contributing](#contributing)
+7. [License](#license)
 
 ## Getting Started
 
 To get started with the Voyage Travel Assistant, follow these steps:
 
 1. Clone the repository:
-
     ```bash
-    git clone https://github.com/codemato/travelease.git
-    cd travelease
+    git clone https://github.com/your-repo/voyage.git
+    cd voyage
     ```
 
 2. Install the required dependencies:
-
     ```bash
     pip install -r requirements.txt
     ```
 
 3. Create a `.env` file in the root directory and add your environment variables:
-
     ```env
     API_MODE=huggingface
     AWS_REGION=your_aws_region
@@ -51,7 +49,6 @@ To get started with the Voyage Travel Assistant, follow these steps:
     ```
 
 4. Run the application:
-
     ```bash
     streamlit run app.py
     ```
@@ -60,28 +57,34 @@ To get started with the Voyage Travel Assistant, follow these steps:
 
 The Voyage Travel Assistant is structured into several modules, each responsible for specific functionalities. Here's an overview of the key modules:
 
-### Modules
+## Modules
 
-#### app.py
+### app.py
+
 The main entry point of the application. It initializes the Streamlit app, sets up the session state, and handles the main flow of the application.
 
-**Functions**
+#### Functions
+
 - `main()`: The main function that initializes the Streamlit app, sets up the session state, and handles the main flow of the application.
 
-#### auth.py
+### auth.py
+
 Handles user authentication and session management.
 
-**Functions**
+#### Functions
+
 - `init_session_state()`: Initializes the session state with default values.
 - `authenticate(username, password)`: Authenticates the user by checking the username and password against the stored user data.
 - `login()`: Displays the login form and handles the login process.
 - `logout()`: Logs out the user by clearing the session state.
 - `require_login(func)`: A decorator that requires the user to be logged in to access a function.
 
-#### chat.py
+### chat.py
+
 Handles the chat functionality, including displaying messages, invoking the chat model, and displaying location information and maps.
 
-**Functions**
+#### Functions
+
 - `show_map_callback()`: Sets the session state to show the map.
 - `hide_map_callback()`: Sets the session state to hide the map.
 - `select_location(index)`: Sets the selected location index in the session state.
@@ -91,10 +94,12 @@ Handles the chat functionality, including displaying messages, invoking the chat
 - `display_messages()`: Displays the chat messages.
 - `start_chat()`: Starts the chat session and handles the chat flow.
 
-#### config.py
+### config.py
+
 Contains configuration constants and loads environment variables.
 
-**Constants**
+#### Constants
+
 - `USERS_FILE`: Path to the users file.
 - `USER_PROFILES_FILE`: Path to the user profiles file.
 - `LOGO_PATH`: Path to the logo image.
@@ -106,41 +111,50 @@ Contains configuration constants and loads environment variables.
 - `VOYAGE_PROMPT`: The prompt used for the Voyage travel assistant.
 - `MAP_CATEGORIES`: Categories of locations to display on the map.
 
-#### map_utils.py
+### map_utils.py
+
 Handles map-related functionalities, including extracting locations from text, geocoding locations, and creating maps.
 
-**Functions**
+#### Functions
+
 - `extract_locations_llm(text, api_client)`: Extracts locations from text using a language model.
 - `get_coordinates_google(location)`: Gets the coordinates of a location using Google Maps.
 - `get_coordinates_nominatim(location)`: Gets the coordinates of a location using Nominatim.
 - `get_coordinates(location)`: Gets the coordinates of a location using the configured geocoding service.
 - `create_map(locations)`: Creates a map with the specified locations.
 
-#### google_reviews.py
+### google_reviews.py
+
 Handles fetching and summarizing Google reviews for hotels.
 
-**Classes**
+#### Classes
+
 - `GoogleReviews`: A class for fetching and summarizing Google reviews.
 
-**Functions**
+#### Functions
+
 - `get_place_id(place_name, location=None)`: Gets the place ID for a given place name and location.
 - `get_reviews(place_name, location=None, max_reviews=5)`: Gets the reviews for a given place name and location.
 - `summarize_reviews(reviews, api_client)`: Summarizes the reviews using a language model.
 - `get_hotel_reviews(hotel_name, location=None, max_reviews=5)`: Gets the reviews for a given hotel name and location.
 - `get_hotel_reviews_summary(hotel_name, api_client, location=None, max_reviews=5)`: Gets the summary of reviews for a given hotel name and location.
 
-#### ui_components.py
+### ui_components.py
+
 Handles UI components and styling.
 
-**Functions**
+#### Functions
+
 - `set_custom_css()`: Sets custom CSS for the application.
 - `render_sidebar()`: Renders the sidebar with quick links and user information.
 - `add_trip_ui(trip_type)`: Displays the UI for adding a new trip.
 
-#### api_client.py
+### api_client.py
+
 Handles API client initialization and model invocation.
 
-**Functions**
+#### Functions
+
 - `initialize_api_client()`: Initializes the API client based on the configured API mode.
 - `invoke_model(prompt, api_client, user_profile)`: Invokes the language model with the given prompt and user profile.
 - `classify_topic(prompt, api_client)`: Classifies the topic of the given prompt using the language model.
@@ -171,14 +185,13 @@ The Voyage Travel Assistant can be configured using environment variables. Creat
 - `ANTHROPIC_API_KEY`: The Anthropic API key for the native Claude client.
 - `GOOGLE_MAPS_API_KEY`: The API key for Google Maps.
 
+## Contributing
 
-## Additional Notes
-
-In case of any difficuilty in setup, read history.txt file on the commands I ran to setup it in my local
-
+Contributions are welcome! Please submit a pull request or open an issue for any bugs, feature requests, or improvements.
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
-
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+```
+In case of any difficuilty in setup, read history.txt file on the commands I ran to setup it in my local
 
