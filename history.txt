@@ -1,0 +1,28 @@
+Note that all the pip packages should be present in requirements.txt
+    1  ls
+    2  cd streamlit/
+    3  sudo yum install python3
+    4  alias python=python3
+    5  curl -O https://bootstrap.pypa.io/get-pip.py
+    6  pip --version
+    7  python get-pip.py --user
+    8  pip install streamlit
+    9  pip install python-dotenv
+   10  sudo yum update -y
+   11  sudo yum install -y ca-certificates
+   12  sudo yum install -y ntp
+   13  sudo yum install -y git
+   14  sudo yum groupinstall -y "Development Tools"
+   15  pip3 install --upgrade streamlit hugchat python-dotenv requests
+   16  cd voyage/
+   17  pip install streamlit-extras
+   18  streamlit run app.py
+   19  pip3 install bcrypt
+   20  pip install bcrypt
+   21  streamlit run app.py
+   22  pip install streamlit python-dotenv boto3 bcrypt hugchat
+   23  streamlit run app.py
+   24  pip install folium streamlit-folium geocoder
+   44  pip install geopy
+   45  history
+   46  pip install googlemaps
