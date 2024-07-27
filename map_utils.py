@@ -164,3 +164,79 @@ def create_map(locations):
     
     logger.info(f"Created map with {len(valid_coordinates)} markers")
     return m
+
+def extract_place_info_llm(text, api_client):
+    print("extract_place_info_llm", text)
+    prompt = f"""
+    Analyze the following text and extract information about places (locations) mentioned. For each place, determine:
+    1. The name of the place
+    2. Whether the user is currently interested in this place
+    3. Whether the user wants to visit this place in the future
+    4. Whether the user is simply checking details about this place
+
+    Only consider places that are specific locations, establishments, or points of interest such as cities, countries, hotels, monuments, restaurants, attractions, etc. Ignore any mentions of places from past trips.
+
+    Return the result as a JSON array of objects, where each object has the following structure:
+    {{
+        "place_name": "Name of the place",
+        "current_interest": true/false,
+        "future_visit": true/false,
+        "checking_details": true/false
+    }}
+
+    If no relevant places are found, return an empty array.
+
+    Text: {text}
+    Response (JSON array of objects):
+    """
+
+    try:
+        if API_MODE == 'bedrock':
+            body = json.dumps({
+                "anthropic_version": "bedrock-2023-05-31",
+                "max_tokens": 300,
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
+            })
+            response = api_client.invoke_model(
+                body=body,
+                modelId=CLAUDE_MODEL_ID,
+                accept='application/json',
+                contentType='application/json'
+            )
+            response_body = json.loads(response.get('body').read())
+            place_info_json = response_body['content'][0]['text']
+        elif API_MODE == 'huggingface':
+            response = api_client.chat(prompt)
+            place_info_json = str(response)
+        elif API_MODE == 'native_claude':
+            response = api_client.messages.create(
+                model="claude-3-sonnet-20240229",
+                max_tokens=300,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
+            )
+            place_info_json = response.content[0].text
+
+        place_info_json = place_info_json.strip()
+        print("--place_info_json--", place_info_json)
+        place_info = json.loads(place_info_json)
+        print("--final_place_info--", place_info)
+        return place_info
+    except json.JSONDecodeError as e:
+        logger.error(f"Error parsing JSON response: {str(e)}")
+        logger.error(f"Raw response: {place_info_json}")
+        if "<!DOCTYPE html>" in place_info_json:
+            logger.error("Received HTML response instead of JSON. API might be down or returning an error page.")
+        return []
+    except Exception as e:
+        logger.error(f"Error extracting place information using LLM: {str(e)}")
+        return []
