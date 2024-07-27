@@ -1,0 +1,285 @@
+{
+  "renjith": {
+    "past_trips": [
+      {
+        "destination": "Paris, France",
+        "date": "Summer 2023",
+        "flight": {
+          "departure": "2023-06-15",
+          "return": "2023-06-25",
+          "class": "Economy",
+          "stopover": {
+            "city": "London",
+            "duration": "3 hours"
+          },
+          "preferences": ["window seat", "vegetarian meal"]
+        },
+        "hotel": {
+          "name": "Le Petit Château",
+          "class": "4-star",
+          "nights": 10,
+          "location": "6th arrondissement",
+          "preferences": ["non-smoking", "high floor"]
+        }
+      },
+      {
+        "destination": "Tokyo, Japan",
+        "date": "Spring 2024",
+        "flight": {
+          "departure": "2024-04-03",
+          "return": "2024-04-14",
+          "class": "Business",
+          "stopover": null,
+          "preferences": ["aisle seat", "lactose-free meal"]
+        },
+        "hotel": {
+          "name": "Sakura Sky Tower",
+          "class": "5-star",
+          "nights": 11,
+          "location": "Shinjuku",
+          "preferences": ["city view", "on-site spa"]
+        }
+      }
+    ],
+    "upcoming_trips": [
+      {
+        "destination": "Bali, Indonesia",
+        "date": "Winter 2024",
+        "flight": {
+          "departure": "2024-12-20",
+          "return": "2025-01-05",
+          "class": "Premium Economy",
+          "stopover": {
+            "city": "Singapore",
+            "duration": "5 hours"
+          },
+          "preferences": ["extra legroom", "seafood meal"]
+        },
+        "hotel": {
+          "name": "Tropical Paradise Resort",
+          "class": "5-star",
+          "nights": 16,
+          "location": "Ubud",
+          "preferences": ["private pool villa", "yoga classes"]
+        }
+      }
+    ],
+    "credit_cards": [
+      {
+        "name": "Chase Sapphire Reserve",
+        "rewards_points": 120000,
+        "offers": [
+          {
+            "description": "5x points on flights booked through Chase Ultimate Rewards",
+            "expiry": "2024-12-31"
+          },
+          {
+            "description": "$100 statement credit on hotel stays of $500 or more",
+            "expiry": "2024-09-30"
+          },
+          {
+            "description": "10% cash back at select restaurants",
+            "expiry": "2024-08-31"
+          }
+        ],
+        "partnerships": [
+          {
+            "brand": "Lyft",
+            "benefit": "10x points on Lyft rides"
+          },
+          {
+            "brand": "DoorDash",
+            "benefit": "Free DashPass subscription"
+          },
+          {
+            "brand": "OpenTable",
+            "benefit": "Extra points on restaurant reservations"
+          }
+        ]
+      },
+      {
+        "name": "Chase Freedom Flex",
+        "rewards_points": 35000,
+        "offers": [
+          {
+            "description": "5% cash back on grocery store purchases",
+            "expiry": "2024-09-30"
+          },
+          {
+            "description": "$20 statement credit on streaming services",
+            "expiry": "2024-12-31"
+          },
+          {
+            "description": "3% cash back at restaurants, including takeout and delivery",
+            "expiry": "Ongoing"
+          }
+        ],
+        "partnerships": [
+          {
+            "brand": "ShopRunner",
+            "benefit": "Free 2-day shipping"
+          },
+          {
+            "brand": "Fandango",
+            "benefit": "Extra cash back on movie tickets"
+          }
+        ]
+      }
+    ],
+    "preferences": {
+      "dining": {
+        "favorite_cuisines": ["Italian", "Thai", "Vegetarian"],
+        "frequently_visited_restaurants": [
+          "Green Leaf Vegetarian",
+          "Pizza Express",
+          "Thai Orchid"
+        ],
+        "dietary_restrictions": ["Vegetarian"]
+      },
+      "shopping": {
+        "preferred_stores": ["Whole Foods", "REI", "Apple Store"],
+        "online_retailers": ["Amazon", "Etsy"]
+      },
+      "entertainment": {
+        "streaming_services": ["Netflix", "Spotify"],
+        "hobbies": ["Yoga", "Hiking", "Photography"]
+      },
+      "travel": {
+        "preferred_airlines": ["Singapore Airlines", "Emirates"],
+        "hotel_chains": ["Marriott", "Hilton"],
+        "travel_style": ["Eco-friendly", "Cultural experiences"]
+      }
+    }
+  },
+  "jay": {
+    "past_trips": [
+      {
+        "destination": "New York City, USA",
+        "date": "Fall 2023",
+        "flight": {
+          "departure": "2023-09-10",
+          "return": "2023-09-17",
+          "class": "First Class",
+          "stopover": null,
+          "preferences": ["quiet zone", "kosher meal"]
+        },
+        "hotel": {
+          "name": "Manhattan Skyline Hotel",
+          "class": "4-star",
+          "nights": 7,
+          "location": "Midtown",
+          "preferences": ["gym access", "business center"]
+        }
+      }
+    ],
+    "upcoming_trips": [
+      {
+        "destination": "Cape Town, South Africa",
+        "date": "Summer 2024",
+        "flight": {
+          "departure": "2024-07-01",
+          "return": "2024-07-15",
+          "class": "Economy",
+          "stopover": {
+            "city": "Dubai",
+            "duration": "4 hours"
+          },
+          "preferences": ["bulkhead seat", "gluten-free meal"]
+        },
+        "hotel": {
+          "name": "Oceanview Lodge",
+          "class": "3-star",
+          "nights": 14,
+          "location": "Camps Bay",
+          "preferences": ["ocean view", "shuttle service"]
+        }
+      }
+    ],
+    "credit_cards": [
+      {
+        "name": "Chase Sapphire Preferred",
+        "rewards_points": 80000,
+        "offers": [
+          {
+            "description": "2x points on travel and dining worldwide",
+            "expiry": "Ongoing"
+          },
+          {
+            "description": "$50 annual Ultimate Rewards hotel credit",
+            "expiry": "Ongoing"
+          },
+          {
+            "description": "5x points on dining purchases every Friday",
+            "expiry": "2024-12-31"
+          }
+        ],
+        "partnerships": [
+          {
+            "brand": "Instacart",
+            "benefit": "3x points on Instacart purchases"
+          },
+          {
+            "brand": "Peloton",
+            "benefit": "Up to $60 back on Peloton Digital or All-Access Membership"
+          },
+          {
+            "brand": "Starbucks",
+            "benefit": "Double stars on Starbucks purchases"
+          }
+        ]
+      },
+      {
+        "name": "Chase Freedom Unlimited",
+        "rewards_points": 25000,
+        "offers": [
+          {
+            "description": "3% cash back on dining and drugstore purchases",
+            "expiry": "Ongoing"
+          },
+          {
+            "description": "5% cash back on travel purchased through Chase Ultimate Rewards",
+            "expiry": "Ongoing"
+          },
+          {
+            "description": "4% cash back at gas stations",
+            "expiry": "2024-06-30"
+          }
+        ],
+        "partnerships": [
+          {
+            "brand": "Gopuff",
+            "benefit": "10% cash back on Gopuff purchases"
+          },
+          {
+            "brand": "Grubhub",
+            "benefit": "Free delivery on orders over $12"
+          }
+        ]
+      }
+    ],
+    "preferences": {
+      "dining": {
+        "favorite_cuisines": ["Steakhouse", "Sushi", "Mediterranean"],
+        "frequently_visited_restaurants": [
+          "Morton's The Steakhouse",
+          "Nobu",
+          "Cava"
+        ],
+        "dietary_restrictions": ["Gluten-free"]
+      },
+      "shopping": {
+        "preferred_stores": ["Nordstrom", "Best Buy", "Home Depot"],
+        "online_retailers": ["Amazon", "Wayfair"]
+      },
+      "entertainment": {
+        "streaming_services": ["HBO Max", "Disney+"],
+        "hobbies": ["Golf", "Wine tasting", "Fitness"]
+      },
+      "travel": {
+        "preferred_airlines": ["Delta", "United"],
+        "hotel_chains": ["Hyatt", "Four Seasons"],
+        "travel_style": ["Luxury", "Adventure"]
+      }
+    }
+  }
+}
