@@ -23,12 +23,12 @@ ANTHROPIC_API_KEY=your_api_key
 # Install dependencies
 Go to travelease root forlder
 ```
-pip install -r /path/to/requirements.txt 
+pip install -r requirements.txt 
 ```
 # Run Streamlit app
 ```
 streamlit run app.py
 ```
-
+In case of any difficuilty in setup, read history.txt file on the commands I ran to setup it in my local
 
 
