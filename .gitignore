@@ -1,0 +1,5 @@
+.DS_Store
+.devcontainer /
+.env
+.streamlit/
+images/.DS_Store

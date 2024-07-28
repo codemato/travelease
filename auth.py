@@ -2,7 +2,7 @@ import streamlit as st
 import json
 import bcrypt
 import logging
-from config import USERS_FILE, LOGO_PATH
+from config import USERS_FILE, LOGO_PATH, DEFAULT_MODE
 from user_profile import load_user_profile
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,11 @@ def init_session_state():
         st.session_state.user_profile = None
     if "map_consent" not in st.session_state:
         st.session_state.map_consent = None
-
+    if "mode" not in st.session_state:
+        st.session_state.mode = DEFAULT_MODE
+    if "page" not in st.session_state:
+        st.session_state.page = "chat"  # Default page is chat
+        
 def authenticate(username, password):
     try:
         with open(USERS_FILE, 'r') as f:

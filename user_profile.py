@@ -91,3 +91,8 @@ def add_trip(trip_type, username, trip_data):
 def get_trips(username, trip_type):
     user_profile = load_user_profile(username)
     return user_profile.get(trip_type, [])
+
+def get_user_country(username):
+    user_profile = load_user_profile(username)
+    # Assuming the user's country is stored in the profile
+    return user_profile.get('country', 'Unknown')

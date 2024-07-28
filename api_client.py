@@ -5,9 +5,12 @@ from hugchat import hugchat
 from hugchat.login import Login
 import streamlit as st
 import logging
-from config import API_MODE, CLAUDE_MODEL_ID, VOYAGE_PROMPT
+from config import API_MODE, CLAUDE_MODEL_ID, VOYAGE_PROMPT, AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET
 import anthropic  # New import for native Claude API
-
+import time
+import requests
+import sounddevice as sd
+import soundfile as sf
 logger = logging.getLogger(__name__)
 
 @st.cache_resource
@@ -109,7 +112,7 @@ TravelEase:"""
     elif API_MODE == 'native_claude':
         try:
             response = api_client.messages.create(
-                model="claude-3-sonnet-20240229",
+                model="claude-3-5-sonnet-20240620",
                 max_tokens=1000,
                 messages=[
                     {
@@ -170,7 +173,7 @@ def classify_topic(prompt, api_client):
     elif API_MODE == 'native_claude':
         try:
             response = api_client.messages.create(
-                model="claude-3-sonnet-20240229",
+                model="claude-3-5-sonnet-20240620",
                 max_tokens=1000,
                 messages=[
                     {
@@ -216,10 +219,13 @@ def format_credit_card_info(card):
     card_info += f"Rewards Points: {card['rewards_points']}\n"
     card_info += "Offers:\n"
     for offer in card['offers']:
-        card_info += f"  - {offer['description']} (Expires: {offer['expiry']})\n"
+        # Ensure special characters and spaces are properly handled
+        description = offer['description'].replace('$', '&#36;').replace('*', r'\*').replace('_', r'\_')
+        card_info += f"  - {description} (Expires: {offer['expiry']})\n"
     card_info += "Partnerships:\n"
     for partnership in card['partnerships']:
-        card_info += f"  - {partnership['brand']}: {partnership['benefit']}\n"
+        benefit = partnership['benefit'].replace('$', '&#36;').replace('*', r'\*').replace('_', r'\_')
+        card_info += f"  - {partnership['brand']}: {benefit}\n"
     return card_info
 
 def format_preferences(preferences):
@@ -239,3 +245,74 @@ def format_preferences(preferences):
     pref_info += f"  - Preferred hotel chains: {', '.join(preferences['travel']['hotel_chains'])}\n"
     pref_info += f"  - Travel style: {', '.join(preferences['travel']['travel_style'])}\n"
     return pref_info
+
+
+def transcribe_audio(audio_data):
+    transcribe_client = boto3.client('transcribe', 
+                                     region_name=AWS_REGION,
+                                     aws_access_key_id=AWS_ACCESS_KEY_ID,
+                                     aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+    
+    s3_client = boto3.client('s3',
+                             region_name=AWS_REGION,
+                             aws_access_key_id=AWS_ACCESS_KEY_ID,
+                             aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+    
+    # Save audio data to a temporary file
+    with open('temp_audio.wav', 'wb') as f:
+        sf.write(f, audio_data, 16000, format='WAV', subtype='PCM_16')
+    
+    # Upload to S3
+    job_name = f"TravelEase_Transcription_{int(time.time())}"
+    s3_client.upload_file('temp_audio.wav', S3_BUCKET, f"{job_name}.wav")
+    
+    # Start transcription job
+    transcribe_client.start_transcription_job(
+        TranscriptionJobName=job_name,
+        Media={'MediaFileUri': f"s3://{S3_BUCKET}/{job_name}.wav"},
+        MediaFormat='wav',
+        LanguageCode='en-US'
+    )
+    
+    # Wait for transcription job to complete
+    while True:
+        status = transcribe_client.get_transcription_job(TranscriptionJobName=job_name)
+        if status['TranscriptionJob']['TranscriptionJobStatus'] in ['COMPLETED', 'FAILED']:
+            break
+        time.sleep(5)
+    
+    if status['TranscriptionJob']['TranscriptionJobStatus'] == 'COMPLETED':
+        response = requests.get(status['TranscriptionJob']['Transcript']['TranscriptFileUri'])
+        text = json.loads(response.text)['results']['transcripts'][0]['transcript']
+        
+        # Clean up
+        s3_client.delete_object(Bucket=S3_BUCKET, Key=f"{job_name}.wav")
+        os.remove('temp_audio.wav')
+        
+        return text
+    else:
+        logger.error("Transcription failed")
+        return None
+
+def synthesize_speech(text):
+    polly_client = boto3.client('polly',
+                                region_name=AWS_REGION,
+                                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                                aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+    
+    response = polly_client.synthesize_speech(
+        Text=text,
+        OutputFormat='mp3',
+        VoiceId='Joanna'
+    )
+    
+    if "AudioStream" in response:
+        with open('speech.mp3', 'wb') as file:
+            file.write(response['AudioStream'].read())
+        with open('speech.mp3', 'rb') as file:
+            audio_bytes = file.read()
+        os.remove('speech.mp3')  # Clean up
+        return audio_bytes
+    else:
+        logger.error("Speech synthesis failed")
+        return None

@@ -1,7 +1,7 @@
+```markdown
+# Voyage Travel Assistant
 
-# TravelEase Travel Assistant
-
-TravelEase is a virtual travel assistant built using Streamlit. It helps users with travel-related queries and tasks, providing concise and helpful responses while maintaining a friendly and professional tone. The assistant uses user profile information, including past and upcoming trips, credit card offers, and user preferences, to provide personalized recommendations and references.
+Voyage is a virtual travel assistant built using Streamlit. It helps users with travel-related queries and tasks, providing concise and helpful responses while maintaining a friendly and professional tone. The assistant uses user profile information, including past and upcoming trips, credit card offers, and user preferences, to provide personalized recommendations and references.
 
 ## Table of Contents
 
@@ -23,12 +23,12 @@ TravelEase is a virtual travel assistant built using Streamlit. It helps users w
 
 ## Getting Started
 
-To get started with the TravelEase Travel Assistant, follow these steps:
+To get started with the Voyage Travel Assistant, follow these steps:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-repo/TravelEase.git
-    cd TravelEase
+    git clone https://github.com/your-repo/voyage.git
+    cd voyage
     ```
 
 2. Install the required dependencies:
@@ -55,7 +55,7 @@ To get started with the TravelEase Travel Assistant, follow these steps:
 
 ## App Structure
 
-The TravelEase Travel Assistant is structured into several modules, each responsible for specific functionalities. Here's an overview of the key modules:
+The Voyage Travel Assistant is structured into several modules, each responsible for specific functionalities. Here's an overview of the key modules:
 
 ## Modules
 
@@ -108,7 +108,7 @@ Contains configuration constants and loads environment variables.
 - `API_MODE`: The API mode to use (huggingface, bedrock, or native_claude).
 - `USE_GOOGLE_MAPS`: Flag to use Google Maps for geocoding.
 - `GOOGLE_MAPS_API_KEY`: API key for Google Maps.
-- `TravelEase_PROMPT`: The prompt used for the TravelEase travel assistant.
+- `VOYAGE_PROMPT`: The prompt used for the Voyage travel assistant.
 - `MAP_CATEGORIES`: Categories of locations to display on the map.
 
 ### map_utils.py
@@ -164,7 +164,7 @@ Handles API client initialization and model invocation.
 
 ## Usage
 
-To use the TravelEase Travel Assistant, follow these steps:
+To use the Voyage Travel Assistant, follow these steps:
 
 1. Start the application by running `streamlit run app.py`.
 2. Log in using the provided login form.
@@ -174,7 +174,7 @@ To use the TravelEase Travel Assistant, follow these steps:
 
 ## Configuration
 
-The TravelEase Travel Assistant can be configured using environment variables. Create a `.env` file in the root directory and add the following variables:
+The Voyage Travel Assistant can be configured using environment variables. Create a `.env` file in the root directory and add the following variables:
 
 - `API_MODE`: The API mode to use (huggingface, bedrock, or native_claude).
 - `AWS_REGION`: The AWS region for the Bedrock client.

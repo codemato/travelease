@@ -52,6 +52,15 @@ class GoogleReviews:
             return None
 
     def summarize_reviews(self, reviews, api_client):
+        if not reviews:
+            logger.info("No reviews found to summarize.")
+            return {
+                "summary": "No reviews available for this location.",
+                "positive_points": [],
+                "negative_points": [],
+                "score": 0
+            }
+
         review_texts = [review['text'] for review in reviews]
         combined_reviews = "\n".join(review_texts)
 
@@ -62,7 +71,7 @@ class GoogleReviews:
         3. Key negative points (if any)
         4. An overall review score out of 5 based on the sentiment
 
-        The response should be a JSON array of strings. If no locations are found, return an empty array.
+        The response should be a JSON object. If no reviews are found, return an object with empty fields and a score of 0.
 
         Reviews:
         {combined_reviews}
@@ -115,7 +124,6 @@ class GoogleReviews:
             summary_json = summary_json.strip()
             if summary_json.startswith("```json"):
                 summary_json = summary_json[7:-3]
-                # Find the end of the JSON object
             json_end = summary_json.rfind('}')
             if json_end != -1:
                 summary_json = summary_json[:json_end+1]
@@ -126,16 +134,20 @@ class GoogleReviews:
             except json.JSONDecodeError as e:
                 logger.error(f"Error parsing JSON response: {str(e)}")
                 logger.error(f"Raw response: {summary_json}")
-                return None
-        except json.JSONDecodeError as e:
-            logger.error(f"Error parsing JSON response: {str(e)}")
-            logger.error(f"Raw response: {summary_json}")
-            if "<!DOCTYPE html>" in summary_json:
-                logger.error("Received HTML response instead of JSON. API might be down or returning an error page.")
-            return None
+                return {
+                    "summary": "Error processing reviews.",
+                    "positive_points": [],
+                    "negative_points": [],
+                    "score": 0
+                }
         except Exception as e:
             logger.error(f"Error summarizing reviews using LLM: {str(e)}")
-            return None
+            return {
+                "summary": "Error processing reviews.",
+                "positive_points": [],
+                "negative_points": [],
+                "score": 0
+            }
 
 def get_hotel_reviews(hotel_name, location=None, max_reviews=5):
     reviewer = GoogleReviews()
@@ -146,19 +158,34 @@ def get_hotel_reviews_summary(hotel_name, api_client, location=None, max_reviews
     reviews_data = reviewer.get_reviews(hotel_name, location, max_reviews)
     
     if reviews_data:
-        summary = reviewer.summarize_reviews(reviews_data['reviews'],api_client)
-        print("-----summary----")
-        print(summary)
-        print("-----summary----")
+        summary = reviewer.summarize_reviews(reviews_data['reviews'], api_client)
         if summary:
             return {
                 'name': reviews_data['name'],
-                'rating': reviews_data['rating'],
+                'rating': reviews_data.get('rating', 0),
                 'summary': summary
             }
         else:
-            logger.error("Failed to generate summary")
-            return None
+            logger.warning("Failed to generate summary")
+            return {
+                'name': reviews_data['name'],
+                'rating': reviews_data.get('rating', 0),
+                'summary': {
+                    "summary": "No review summary available.",
+                    "positive_points": [],
+                    "negative_points": [],
+                    "score": 0
+                }
+            }
     else:
-        logger.error("Failed to fetch reviews")
-        return None
+        logger.warning(f"No reviews found for {hotel_name}")
+        return {
+            'name': hotel_name,
+            'rating': 0,
+            'summary': {
+                "summary": "No reviews available for this location.",
+                "positive_points": [],
+                "negative_points": [],
+                "score": 0
+            }
+        }
