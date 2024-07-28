@@ -10,3 +10,9 @@ python-dotenv==1.0.1
 python_bcrypt==0.3.2
 streamlit==1.36.0
 streamlit_folium==0.21.1
+sounddevice
+soundfile
+streamlit_option_menu 
+requests
+streamlit-searchbox
+

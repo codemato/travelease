@@ -149,7 +149,8 @@
         "hotel_chains": ["Marriott", "Hilton"],
         "travel_style": ["Eco-friendly", "Cultural experiences"]
       }
-    }
+    },
+    "country": "India"
   },
   "jay": {
     "past_trips": [
@@ -280,6 +281,7 @@
         "hotel_chains": ["Hyatt", "Four Seasons"],
         "travel_style": ["Luxury", "Adventure"]
       }
-    }
+    },
+    "country": "India"
   }
 }

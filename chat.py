@@ -1,6 +1,6 @@
 import streamlit as st
 from config import API_MODE, USE_GOOGLE_MAPS, LOGO_PATH
-from api_client import invoke_model, initialize_api_client
+from api_client import invoke_model, initialize_api_client, transcribe_audio, synthesize_speech
 from map_utils import extract_locations_llm, create_map, extract_place_info_llm
 from streamlit_folium import folium_static
 import folium
@@ -9,6 +9,11 @@ from google_reviews import get_hotel_reviews_summary
 import json
 import logging
 from PIL import Image
+import sounddevice as sd
+import soundfile as sf
+import numpy as np
+import time
+import base64
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +53,58 @@ def initialize_session_state():
     if "welcome_displayed" not in st.session_state:
         st.session_state.welcome_displayed = False
 
+def start_voice_chat():
+    if "api_client" not in st.session_state or st.session_state.api_client is None:
+        st.session_state.api_client = initialize_api_client()
+
+    initialize_session_state()
+
+    if st.session_state.api_client:
+        st.markdown('<div class="custom-container voice-chat-container">', unsafe_allow_html=True)
+        st.title("Voice-Assisted Travel Planner")
+        
+        if st.button("Start Recording", key="start_recording"):
+            with st.spinner("Recording... Speak now"):
+                audio_data = record_audio(duration=5)  # Record for 5 seconds
+            
+            with st.spinner("Processing your request..."):
+                text = transcribe_audio(audio_data)
+                st.text(f"You said: {text}")
+                
+                response = invoke_model(text, st.session_state.api_client, st.session_state.user_profile)
+                st.text("AI Response:")
+                st.write(response)
+                
+                audio_response = synthesize_speech(response)
+                
+                # Convert audio to base64
+                audio_base64 = base64.b64encode(audio_response).decode()
+                
+                # Create an HTML audio element with autoplay
+                audio_html = f"""
+                    <audio autoplay="true">
+                        <source src="data:audio/mp3;base64,{audio_base64}" type="audio/mp3">
+                        Your browser does not support the audio element.
+                    </audio>
+                """
+                
+                # Display the audio element
+                st.components.v1.html(audio_html, height=50)
+                
+                locations = extract_locations_llm(response, st.session_state.api_client)
+                if locations:
+                    st.session_state.locations = locations
+                    display_map_and_reviews()
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+    else:
+        st.warning(f"TravelEase initialization failed. Please check your {API_MODE.capitalize()} credentials and try again.")
+
+def record_audio(duration, samplerate=16000):
+    audio_data = sd.rec(int(samplerate * duration), samplerate=samplerate, channels=1, dtype='float32')
+    sd.wait()
+    return audio_data
+
 def should_display_helper_buttons(place_info):
     return any(place['current_interest'] or place['future_visit'] or place['checking_details'] for place in place_info)
 
@@ -59,7 +116,7 @@ def handle_button_click(button_type, location):
         "activities": f"Based on the following context and the location {location}, provide information about popular activities nearby:\n\n{context}",
         "culture": f"Based on the following context and the location {location}, provide information about popular cultural centers nearby:\n\n{context}",
         "weather": f"Based on the following context and the location {location}, provide generic weather information. If the user specified a time of year for travel, include that specific weather information:\n\n{context}",
-        "itinerary": f"Based on the following context and the location {location}, provide a {st.session_state.travel_days}-day itinerary:\n\n{context}"
+        # "itinerary": f"Based on the following context and the location {location}, provide a {st.session_state.travel_days}-day itinerary:\n\n{context}"
     }
     
     prompt = prompts.get(button_type, "")
@@ -75,8 +132,9 @@ def button_click(button_type):
 def display_helper_buttons(location):
     st.info("💡 Tip: Click on a below buttons to get more information about the location.")
     cols = st.columns(5)
-    buttons = ["Restaurants", "Activities", "Culture", "Weather", f"{st.session_state.travel_days} days itinerary"]
-    
+   #buttons = ["Restaurants", "Activities", "Culture", "Weather", f"{st.session_state.travel_days} days itinerary"]
+    buttons = ["Restaurants", "Activities", "Culture", "Weather"]
+
     for i, button in enumerate(buttons):
         with cols[i]:
             st.button(button, key=f"info_button_{i}", on_click=button_click, args=(button.lower(),))
@@ -259,7 +317,7 @@ def start_chat():
             display_button_results(st.session_state.locations[st.session_state.selected_location] if st.session_state.selected_location is not None else "")
 
         # Follow-up question
-        display_follow_up_question()
+        #display_follow_up_question()
 
     else:
         st.warning(f"TravelEase initialization failed. Please check your {API_MODE.capitalize()} credentials and try again.")

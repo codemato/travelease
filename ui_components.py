@@ -267,9 +267,21 @@ def render_sidebar():
         if st.button("Travel Tips"):
             st.write("Travel tips for your destination will be shown here.")
         
-        if st.button("Emergency Contacts"):
-            st.write("Emergency contact information will be listed here.")
+        st.sidebar.button("Emergency Contacts", on_click=set_page, args=("emergency_contacts",))
+
+        # Mode selection in sidebar
+        st.title("Mode Selection")
+        mode_options = ["Standard", "Special (Voice Assisted)"]
+        selected_mode = st.radio("Choose Mode", mode_options, index=0 if st.session_state.mode == "standard" else 1)
         
+        if selected_mode == "Standard":
+            st.session_state.mode = "standard"
+        else:
+            st.session_state.mode = "special"
+
+        # Display current mode
+        st.write(f"Current Mode: {st.session_state.mode.capitalize()}")
+                
         # if st.button("Manage Past Trips"):
         #     add_trip_ui("past_trips")
         
@@ -282,7 +294,30 @@ def render_sidebar():
         
         st.write(f"Logged in as {st.session_state.username}")
         st.write(f"API Mode: {API_MODE.capitalize()}")
+        
+def set_page(page):
+    st.session_state.page = page
 
+def render_special_mode_ui():
+    with st.container():
+        st.markdown('<div class="custom-container">', unsafe_allow_html=True)
+        st.title("Voice-Assisted Travel Planner")
+        st.markdown("Press the button and speak your travel query.")
+        
+        col1, col2, col3 = st.columns([1,2,1])
+        with col2:
+            st.button("🎤 Press to Speak", key="voice_record_button", help="Click and hold to record your voice", use_container_width=True)
+
+        st.markdown("---")
+        st.subheader("Instructions:")
+        st.markdown("""
+        1. Click the microphone button to start recording.
+        2. Speak your travel query clearly.
+        3. Release the button to stop recording.
+        4. Wait for the AI to process your query and listen to the response.
+        """)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
 def add_trip_ui(trip_type):
     st.subheader(f"Add New {'Past' if trip_type == 'past_trips' else 'Upcoming'} Trip")
     destination = st.text_input("Destination")

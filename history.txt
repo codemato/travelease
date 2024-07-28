@@ -1,28 +1,92 @@
-Note that all the pip packages should be present in requirements.txt
-    1  ls
-    2  cd streamlit/
-    3  sudo yum install python3
-    4  alias python=python3
-    5  curl -O https://bootstrap.pypa.io/get-pip.py
-    6  pip --version
-    7  python get-pip.py --user
-    8  pip install streamlit
-    9  pip install python-dotenv
-   10  sudo yum update -y
-   11  sudo yum install -y ca-certificates
-   12  sudo yum install -y ntp
-   13  sudo yum install -y git
-   14  sudo yum groupinstall -y "Development Tools"
-   15  pip3 install --upgrade streamlit hugchat python-dotenv requests
-   16  cd voyage/
-   17  pip install streamlit-extras
-   18  streamlit run app.py
-   19  pip3 install bcrypt
-   20  pip install bcrypt
-   21  streamlit run app.py
-   22  pip install streamlit python-dotenv boto3 bcrypt hugchat
-   23  streamlit run app.py
-   24  pip install folium streamlit-folium geocoder
-   44  pip install geopy
-   45  history
-   46  pip install googlemaps
+    1  yum
+    2  clear
+    3  mkdir streamlit
+    4  pwd
+    5  cd streamlit/
+    6  cd voyage/
+    7  streamlit run app.py
+    8  python
+    9  sudo yum install python3
+   10  alias python=python3
+   11  python
+   12  clea
+   13  clear
+   14  python --version
+   15  nano ~/.bashrc 
+   16  vim ~/.bashrc 
+   17  python --version
+   18  pip3 
+   19  pip
+   20  curl -O https://bootstrap.pypa.io/get-pip.py
+   21  python get-pip.py --user
+   22  pip
+   23  pip --versoin
+   24  pip --version
+   25  pip install streamlit
+   26  cd chatv1/
+   27  python test.py 
+   28  pip -r requirements.txt 
+   29  pip install -r requirements.txt 
+   30  python test.py 
+   31  sudo yum install ec2-instance-connect
+   32  sudo less /etc/ssh/sshd_config
+   33  streamlit streamlit_app.py 
+   34  ls
+   35  streamlit run streamlit_app.py 
+   36  streamlit run chat.py 
+   37  clear
+   38  pip install python-dotenv
+   39  streamlit run app.py
+   40  streamlit run app.py --logger.level=debug
+   41  sudo apt-get update
+   42  sudo yum update -y
+   43  sudo yum install -y ca-certificates
+   44  sudo yum install -y ntp
+   45  sudo systemctl start ntpd
+   46  sudo systemctl enable ntpd
+   47  sudo yum install -y ntp
+   48  sudo yum install -y git
+   49  sudo yum groupinstall -y "Development Tools"
+   50  streamlit run app.py
+   51  streamlit run chat.py
+   52  pip3 install --upgrade streamlit hugchat python-dotenv requests
+   53  streamlit run app.py
+   54  streamlit run app2.py
+   55  streamlit run app3.py
+   56  cd ..
+   57  cd voyage/
+   58  streamlit run app.py
+   59  pip install streamlit-extras
+   60  streamlit run app.py
+   61  ls
+   62  streamlit run app.py
+   63  ls
+   64  streamlit run app.py
+   65  ls
+   66  cd voyage/
+   67  streamlit run app.py
+   68  cd streamlit/
+   69  ls
+   70  cd ~/.vscode-server
+   71  rm data/* -rf
+   72  rm bin/* -rf
+   73  ls
+   74  cd stramlit
+   75  cd streamlit/
+   76  zip
+   77  zip -r voyage/
+   78  zip -r voyage.zip voyage/
+   79  ls
+   80  aws
+   81  aws s3 ls
+   82  aws s3 cp voyage.zip s3://artifacts-streamlit
+   83  yum history
+   84* yum history listsudo yum --setopt=history_list_view=commands history list all
+
+   85  sudo yum --setopt=history_list_view=commands history list all
+   86  sudo yum history list all
+   87  sudo yum history list python
+   88  history
+   89  history > history.txt
+
+
