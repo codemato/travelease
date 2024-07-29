@@ -174,17 +174,17 @@ def extract_place_info_llm(text, api_client):
     3. Whether the user wants to visit this place in the future
     4. Whether the user is simply checking details about this place
 
-    Only consider places that are specific locations, establishments, or points of interest such as cities, countries, hotels, monuments, restaurants, attractions, etc. Ignore any mentions of places from past trips.
+    Consider both specific locations (e.g., cities, countries) and general travel intentions. If the user expresses a desire to travel or plan a trip without mentioning a specific place, create an entry for the general travel intention.
 
     Return the result as a JSON array of objects, where each object has the following structure:
     {{
-        "place_name": "Name of the place",
+        "place_name": "Name of the place or 'General Travel Plan' if no specific place is mentioned",
         "current_interest": true/false,
         "future_visit": true/false,
         "checking_details": true/false
     }}
 
-    If no relevant places are found, return an empty array.
+    If no relevant places or travel intentions are found, return an empty array.
 
     Text: {text}
     Response (JSON array of objects):

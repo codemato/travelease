@@ -52,7 +52,8 @@ def initialize_api_client():
         st.error(f"Invalid API_MODE. Please check your configuration.")
         return None
 
-def invoke_model(prompt, api_client, user_profile):
+def invoke_model(prompt, api_client, user_profile, context=""):
+    
     past_trips = user_profile.get("past_trips", [])
     upcoming_trips = user_profile.get("upcoming_trips", [])
     credit_cards = user_profile.get("credit_cards", [])
@@ -74,6 +75,9 @@ User Profile Information:
 {credit_cards_info}
 
 {preferences_info}
+
+Recent Conversation:
+{context}
 
 User Query: {prompt}
 
