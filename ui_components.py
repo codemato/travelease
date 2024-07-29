@@ -264,8 +264,8 @@ def render_sidebar():
         # if st.button("View Itinerary"):
         #     st.write("Your itinerary will be displayed here.")
         
-        if st.button("Travel Tips"):
-            st.write("Travel tips for your destination will be shown here.")
+        # Add the new Flight Search button
+        st.sidebar.button("Flight Search", on_click=set_page, args=("flight_search",))
         
         st.sidebar.button("Emergency Contacts", on_click=set_page, args=("emergency_contacts",))
 

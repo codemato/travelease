@@ -5,6 +5,7 @@ from chat import start_chat, start_voice_chat
 from ui_components import render_sidebar, set_custom_css
 from user_profile import load_user_profile
 from emergency_services import emergency_contacts_page
+from flight_search import flight_search_page  # Import the new flight_search_page function
 
 
 def main():
@@ -26,6 +27,8 @@ def main():
             #from chat import start_chat
             if st.session_state.page == "emergency_contacts":
                 emergency_contacts_page()
+            elif st.session_state.page == "flight_search":
+                flight_search_page()  # Add the new flight search page
             elif st.session_state.mode == "standard":
                 start_chat()
             else:  # special mode
