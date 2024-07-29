@@ -3,6 +3,7 @@ from googlemaps import exceptions
 import logging
 from config import GOOGLE_MAPS_API_KEY, API_MODE, CLAUDE_MODEL_ID
 import json
+import base64
 
 logger = logging.getLogger(__name__)
 
@@ -28,10 +29,11 @@ class GoogleReviews:
             return None
 
         try:
-            place_details = self.gmaps.place(place_id=place_id, fields=['name', 'rating', 'review'])
+            place_details = self.gmaps.place(place_id=place_id, fields=['name', 'rating', 'review', 'photo'])
             if 'result' in place_details:
                 result = place_details['result']
                 reviews = result.get('reviews', [])
+                photos = result.get('photos', [])
                 return {
                     'name': result.get('name'),
                     'rating': result.get('rating'),
@@ -42,7 +44,8 @@ class GoogleReviews:
                             'text': review.get('text'),
                             'time': review.get('time')
                         } for review in reviews[:max_reviews]
-                    ]
+                    ],
+                    'photos': [photo.get('photo_reference') for photo in photos[:5]]  # Get up to 5 photo references
                 }
             else:
                 logger.warning(f"No details found for place: {place_name}")
@@ -50,7 +53,21 @@ class GoogleReviews:
         except exceptions.ApiError as e:
             logger.error(f"Error fetching reviews: {str(e)}")
             return None
-
+        
+    def get_photo(self, photo_reference, max_width=400):
+        try:
+            photo = self.gmaps.places_photo(photo_reference, max_width=max_width)
+            if photo:
+                # Read the entire content of the photo
+                photo_data = b''.join(photo)
+                return base64.b64encode(photo_data).decode('utf-8')
+            else:
+                logger.warning(f"No photo found for reference: {photo_reference}")
+                return None
+        except exceptions.ApiError as e:
+            logger.error(f"Error fetching photo: {str(e)}")
+            return None
+  
     def summarize_reviews(self, reviews, api_client):
         if not reviews:
             logger.info("No reviews found to summarize.")
@@ -153,6 +170,10 @@ def get_hotel_reviews(hotel_name, location=None, max_reviews=5):
     reviewer = GoogleReviews()
     return reviewer.get_reviews(hotel_name, location, max_reviews)
 
+def get_place_photo(photo_reference, max_width=800):
+    reviewer = GoogleReviews()
+    return reviewer.get_photo(photo_reference, max_width)
+
 def get_hotel_reviews_summary(hotel_name, api_client, location=None, max_reviews=5):
     reviewer = GoogleReviews()
     reviews_data = reviewer.get_reviews(hotel_name, location, max_reviews)
@@ -163,7 +184,8 @@ def get_hotel_reviews_summary(hotel_name, api_client, location=None, max_reviews
             return {
                 'name': reviews_data['name'],
                 'rating': reviews_data.get('rating', 0),
-                'summary': summary
+                'summary': summary,
+                'photos': reviews_data.get('photos', [])  # Include photos in the return data
             }
         else:
             logger.warning("Failed to generate summary")
@@ -175,7 +197,8 @@ def get_hotel_reviews_summary(hotel_name, api_client, location=None, max_reviews
                     "positive_points": [],
                     "negative_points": [],
                     "score": 0
-                }
+                },
+                'photos': reviews_data.get('photos', [])  # Include photos even if summary fails
             }
     else:
         logger.warning(f"No reviews found for {hotel_name}")
@@ -187,5 +210,6 @@ def get_hotel_reviews_summary(hotel_name, api_client, location=None, max_reviews
                 "positive_points": [],
                 "negative_points": [],
                 "score": 0
-            }
+            },
+            'photos': []  # Empty list if no reviews/photos found
         }

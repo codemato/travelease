@@ -356,3 +356,44 @@ def add_trip_ui(trip_type):
         
         add_trip(trip_type, st.session_state.username, new_trip)
         st.success(f"New {'past' if trip_type == 'past_trips' else 'upcoming'} trip added successfully!")
+
+def set_custom_carousel_css():
+    st.markdown("""
+    <style>
+    .stForm {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+    }
+    .stForm > div {
+        flex: 1 !important;
+        margin: 0 5px !important;
+    }
+    button.ef3psqc7 {
+        width: 100% !important;
+        background-color: #f0f2f6 !important;
+        color: #333333 !important;
+        border: none !important;
+        padding: 10px !important;
+        border-radius: 5px !important;
+        cursor: pointer !important;
+        transition: background-color 0.3s !important;
+    }
+    button.ef3psqc7:hover {
+        background-color: #e0e2e6 !important;
+    }
+    .image-container {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        height: 300px !important;
+        overflow: hidden !important;
+        margin-bottom: 10px !important;
+    }
+    .image-container img {
+        max-width: 100% !important;
+        max-height: 100% !important;
+        object-fit: contain !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)

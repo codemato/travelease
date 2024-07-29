@@ -2,10 +2,11 @@ import streamlit as st
 from config import API_MODE, USE_GOOGLE_MAPS, LOGO_PATH
 from api_client import invoke_model, initialize_api_client, transcribe_audio, synthesize_speech
 from map_utils import extract_locations_llm, create_map, extract_place_info_llm
+from ui_components import set_custom_carousel_css
 from streamlit_folium import folium_static
 import folium
 import streamlit.components.v1 as components
-from google_reviews import get_hotel_reviews_summary
+from google_reviews import get_hotel_reviews_summary, get_place_photo
 import json
 import logging
 from PIL import Image
@@ -146,6 +147,52 @@ def display_button_results(location):
         st.write(result)
         st.session_state.button_clicked = False  # Reset the button click state
 
+def display_image_carousel(photos, hotel_name):
+    if not photos:
+        st.write("No photos available for this location.")
+        return
+
+    # Apply custom CSS
+    set_custom_carousel_css()
+
+    # Initialize session state for this hotel if not exists
+    if f"image_index_{hotel_name}" not in st.session_state:
+        st.session_state[f"image_index_{hotel_name}"] = 0
+
+    image_index = st.session_state[f"image_index_{hotel_name}"]
+    
+    # Create a container for the image and buttons
+    with st.container():
+        # Display current image
+        with st.spinner("Loading image..."):
+            photo_reference = photos[image_index]
+            image_data = get_place_photo(photo_reference)
+            if image_data:
+                st.markdown(f"""
+                <div class="image-container">
+                    <img src="data:image/jpeg;base64,{image_data}">
+                </div>
+                <p style="text-align: center;">Image {image_index + 1} of {len(photos)}</p>
+                """, unsafe_allow_html=True)
+            else:
+                st.write("Failed to load image.")
+
+        # Use a form for the buttons
+        with st.form(key=f"nav_form_{hotel_name}"):
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                prev_button = st.form_submit_button("Previous")
+            with col2:
+                next_button = st.form_submit_button("Next")
+            
+            # Handle button clicks
+            if prev_button:
+                st.session_state[f"image_index_{hotel_name}"] = (image_index - 1) % len(photos)
+                st.experimental_rerun()
+            elif next_button:
+                st.session_state[f"image_index_{hotel_name}"] = (image_index + 1) % len(photos)
+                st.experimental_rerun()
+
 def display_map_and_reviews():
     st.header("Location Overview")
     
@@ -195,6 +242,9 @@ def display_map_and_reviews():
     if selected_hotel:
         reviews = get_hotel_reviews_summary(selected_hotel, st.session_state.api_client)
         if reviews:
+                # Display image carousel
+            display_image_carousel(reviews.get('photos', []), reviews['name'])
+
             col1, col2, col3 = st.columns([2,1,1])
             with col1:
                 st.subheader(reviews['name'])
