@@ -263,7 +263,8 @@ def render_sidebar():
         
         # if st.button("View Itinerary"):
         #     st.write("Your itinerary will be displayed here.")
-        
+        st.sidebar.button("Chat", on_click=set_page, args=("chat",))
+
         # Add the new Flight Search button
         st.sidebar.button("Flight Search", on_click=set_page, args=("flight_search",))
         

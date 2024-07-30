@@ -5,7 +5,7 @@ from hugchat import hugchat
 from hugchat.login import Login
 import streamlit as st
 import logging
-from config import API_MODE, CLAUDE_MODEL_ID, VOYAGE_PROMPT, AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET
+from config import API_MODE, CLAUDE_MODEL_ID, VOYAGE_PROMPT, AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET, AWS_CLAUDE_MODEL_ID,AWS_SESSION_TOKEN
 import anthropic  # New import for native Claude API
 import time
 import requests
@@ -17,12 +17,13 @@ logger = logging.getLogger(__name__)
 def initialize_api_client():
     if API_MODE == 'bedrock':
         try:
-            bedrock_client = boto3.client(
-                service_name='bedrock-runtime',
-                region_name=os.getenv('AWS_REGION'),
-                aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
-                aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
+            session = boto3.Session(
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                aws_session_token=AWS_SESSION_TOKEN,  # Add this line
+                region_name=AWS_REGION
             )
+            bedrock_client = session.client('bedrock-runtime')
             return bedrock_client
         except Exception as e:
             logger.error(f"Bedrock client initialization failed: {str(e)}")
@@ -30,7 +31,6 @@ def initialize_api_client():
             return None
     elif API_MODE == 'huggingface':
         try:
-            #print("creds",os.getenv('HF_EMAIL'), os.getenv('HF_PASS'))
             sign = Login(os.getenv('HF_EMAIL'), os.getenv('HF_PASS'))
             cookies = sign.login()
             chatbot = hugchat.ChatBot(cookies=cookies)
@@ -52,7 +52,8 @@ def initialize_api_client():
         st.error(f"Invalid API_MODE. Please check your configuration.")
         return None
 
-def invoke_model(prompt, api_client, user_profile):
+def invoke_model(prompt, api_client, user_profile, context=""):
+    
     past_trips = user_profile.get("past_trips", [])
     upcoming_trips = user_profile.get("upcoming_trips", [])
     credit_cards = user_profile.get("credit_cards", [])
@@ -75,6 +76,9 @@ User Profile Information:
 
 {preferences_info}
 
+Recent Conversation:
+{context}
+
 User Query: {prompt}
 
 TravelEase:"""
@@ -93,7 +97,7 @@ TravelEase:"""
             })
             response = api_client.invoke_model(
                 body=body,
-                modelId=CLAUDE_MODEL_ID,
+                modelId=AWS_CLAUDE_MODEL_ID,
                 accept='application/json',
                 contentType='application/json'
             )
@@ -154,7 +158,7 @@ def classify_topic(prompt, api_client):
             })
             response = api_client.invoke_model(
                 body=body,
-                modelId=CLAUDE_MODEL_ID,
+                modelId=AWS_CLAUDE_MODEL_ID,
                 accept='application/json',
                 contentType='application/json'
             )

@@ -53,6 +53,14 @@ def initialize_session_state():
         st.session_state.button_clicked = False
     if "welcome_displayed" not in st.session_state:
         st.session_state.welcome_displayed = False
+    if "helper_buttons_displayed" not in st.session_state:
+        st.session_state.helper_buttons_displayed = False
+    if "button_results" not in st.session_state:
+        st.session_state.button_results = {}
+
+def button_click(button_type):
+    st.session_state.selected_button = button_type
+    st.session_state.button_clicked = True
 
 def start_voice_chat():
     if "api_client" not in st.session_state or st.session_state.api_client is None:
@@ -106,23 +114,31 @@ def record_audio(duration, samplerate=16000):
     sd.wait()
     return audio_data
 
-def should_display_helper_buttons(place_info):
-    return any(place['current_interest'] or place['future_visit'] or place['checking_details'] for place in place_info)
+def should_display_helper_buttons(place_info, full_response):
+    if place_info:
+        return any(place['current_interest'] or place['future_visit'] or place['checking_details'] for place in place_info)
+    else:
+        # If no place_info, check if the response indicates travel planning
+        planning_keywords = ['plan', 'visit', 'travel', 'trip', 'vacation', 'holiday', 'tour']
+        return any(keyword in full_response.lower() for keyword in planning_keywords)
 
 def handle_button_click(button_type, location):
     context = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state.chat_history[-5:]])
     
     prompts = {
-        "restaurants": f"Based on the following context and the location {location}, provide information about popular restaurants nearby:\n\n{context}",
-        "activities": f"Based on the following context and the location {location}, provide information about popular activities nearby:\n\n{context}",
-        "culture": f"Based on the following context and the location {location}, provide information about popular cultural centers nearby:\n\n{context}",
-        "weather": f"Based on the following context and the location {location}, provide generic weather information. If the user specified a time of year for travel, include that specific weather information:\n\n{context}",
-        # "itinerary": f"Based on the following context and the location {location}, provide a {st.session_state.travel_days}-day itinerary:\n\n{context}"
+        "restaurants": f"Based on the following conversation context and the location {location}, provide information about popular restaurants nearby:\n\n{context}",
+        "activities": f"Based on the following conversation context and the location {location}, provide information about popular activities nearby:\n\n{context}",
+        "culture": f"Based on the following conversation context and the location {location}, provide information about popular cultural centers nearby:\n\n{context}",
+        "weather": f"Based on the following conversation context and the location {location}, provide generic weather information. If the user specified a time of year for travel, include that specific weather information:\n\n{context}",
     }
     
     prompt = prompts.get(button_type, "")
     if prompt:
         response = invoke_model(prompt, st.session_state.api_client, st.session_state.user_profile)
+        
+        # Add the response to chat history
+        st.session_state.chat_history.append({"role": "assistant", "content": response})
+        
         return response
     return ""
 
@@ -132,20 +148,43 @@ def button_click(button_type):
 
 def display_helper_buttons(location):
     st.info("💡 Tip: Click on a below buttons to get more information about the location.")
-    cols = st.columns(5)
-   #buttons = ["Restaurants", "Activities", "Culture", "Weather", f"{st.session_state.travel_days} days itinerary"]
+    cols = st.columns(4)
     buttons = ["Restaurants", "Activities", "Culture", "Weather"]
 
     for i, button in enumerate(buttons):
         with cols[i]:
-            st.button(button, key=f"info_button_{i}", on_click=button_click, args=(button.lower(),))
+            unique_key = f"info_button_{location}_{button.lower()}"
+            if st.button(button, key=unique_key):
+                button_click(button.lower())
+
+def get_chat_context():
+    context = []
+    for msg in st.session_state.chat_history[-10:]:  # Get last 10 messages
+        if msg['role'] == 'user':
+            context.append(f"User: {msg['content']}")
+        elif msg['role'] == 'assistant':
+            context.append(f"TravelEase: {msg['content']}")
+    return "\n".join(context)
+
+def display_debug_info(context):
+    st.sidebar.subheader("Debug Information")
+    st.sidebar.text("Current Context:")
+    st.sidebar.code(context)
 
 def display_button_results(location):
     if st.session_state.button_clicked:
         result = handle_button_click(st.session_state.selected_button, location)
-        st.markdown(f"### {st.session_state.selected_button.capitalize()} Information")
-        st.write(result)
-        st.session_state.button_clicked = False  # Reset the button click state
+        st.session_state.button_results[st.session_state.selected_button] = result
+        st.session_state.button_clicked = False
+        
+        # Add button click result to chat history
+        button_result_message = f"Here's information about {st.session_state.selected_button} in {location}:\n\n{result}"
+        st.session_state.chat_history.append({"role": "assistant", "content": button_result_message})
+        
+        # Display the result in the chat UI
+        with st.chat_message("assistant", avatar=Image.open("images/icon.png")):
+            st.markdown(f"### {st.session_state.selected_button.capitalize()} Information")
+            st.markdown(result)
 
 def display_image_carousel(photos, hotel_name):
     if not photos:
@@ -295,7 +334,8 @@ def start_chat():
 
     if st.session_state.api_client:
         icon = Image.open("images/icon.png")
-        
+         # Developer mode toggle
+        developer_mode = st.sidebar.checkbox("Developer Mode")       
         # Display welcome message only once
         if not st.session_state.welcome_displayed:
             welcome_message = f"Welcome back, {st.session_state.username}! How can I assist you with your travel plans today?"
@@ -317,12 +357,16 @@ def start_chat():
             # Add user message to chat history
             st.session_state.chat_history.append({"role": "user", "content": prompt})
 
-            st.session_state.show_map = False
-            st.session_state.locations = []
-            
             with st.spinner("Thinking..."):
                 try:
-                    full_response = invoke_model(prompt, st.session_state.api_client, st.session_state.user_profile)
+                    # Prepare context from recent chat history
+                    context = get_chat_context()
+                    
+                    # Display debug information if in developer mode
+                    if developer_mode:
+                        display_debug_info(context)
+
+                    full_response = invoke_model(prompt, st.session_state.api_client, st.session_state.user_profile, context=context)
                     
                     # Display assistant response
                     with st.chat_message("assistant", avatar=icon):
@@ -336,7 +380,7 @@ def start_chat():
                     
                     st.session_state.locations = locations
                     st.session_state.place_info = place_info
-                
+                    
                 except Exception as e:
                     logger.error(f"Error during chat: {str(e)}")
                     error_message = "TravelEase: I apologize, but I encountered an error while processing your request. Please try again."
@@ -354,18 +398,25 @@ def start_chat():
             st.write("I've found some locations that might be relevant to your query.")
             col1, col2 = st.columns(2)
             with col1:
-                st.button("Show locations on map", on_click=show_map_callback)
+                if st.button("Show locations on map"):
+                    st.session_state.show_map = True
             with col2:
-                st.button("Continue without map", on_click=hide_map_callback)
+                if st.button("Continue without map"):
+                    st.session_state.show_map = False
 
-        if st.session_state.show_map and st.session_state.locations:
-            display_map_and_reviews()
+            if st.session_state.show_map:
+                display_map_and_reviews()
 
-        # Helper Buttons section
-        if should_display_helper_buttons(st.session_state.place_info):
-            display_helper_buttons(st.session_state.locations[st.session_state.selected_location] if st.session_state.selected_location is not None else "")
-            display_button_results(st.session_state.locations[st.session_state.selected_location] if st.session_state.selected_location is not None else "")
-
+        # Display helper buttons and results
+        if should_display_helper_buttons(st.session_state.place_info, st.session_state.chat_history[-1]["content"] if st.session_state.chat_history else ""):
+            location = st.session_state.locations[0] if st.session_state.locations else "general"
+            display_helper_buttons(location)
+            display_button_results(location)
+            st.session_state.helper_buttons_displayed = True
+            
+        # Display debug information if in developer mode
+        if developer_mode:
+            display_debug_info(get_chat_context())
         # Follow-up question
         #display_follow_up_question()
 

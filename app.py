@@ -24,15 +24,17 @@ def main():
         set_custom_css()
         
         try:
-            #from chat import start_chat
             if st.session_state.page == "emergency_contacts":
                 emergency_contacts_page()
             elif st.session_state.page == "flight_search":
-                flight_search_page()  # Add the new flight search page
-            elif st.session_state.mode == "standard":
-                start_chat()
-            else:  # special mode
-                start_voice_chat()
+                flight_search_page()
+            elif st.session_state.page == "chat" or st.session_state.page == "":
+                if st.session_state.mode == "standard":
+                    start_chat()
+                else:  # special mode
+                    start_voice_chat()
+            else:
+                st.error("Unknown page selected")
         except ImportError as e:
             st.error(f"Error: Unable to import required modules. Please check your installation. Details: {str(e)}")
         except Exception as e:
