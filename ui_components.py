@@ -269,7 +269,8 @@ def render_sidebar():
         st.sidebar.button("Flight Search", on_click=set_page, args=("flight_search",))
         
         st.sidebar.button("Emergency Contacts", on_click=set_page, args=("emergency_contacts",))
-
+        # Add the new Image Search button
+        st.sidebar.button("Search by Image", on_click=set_page, args=("image_search",))
         # Mode selection in sidebar
         st.title("Mode Selection")
         mode_options = ["Standard", "Special (Voice Assisted)"]

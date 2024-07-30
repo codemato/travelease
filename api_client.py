@@ -51,7 +51,7 @@ def initialize_api_client():
         logger.error(f"Invalid API_MODE: {API_MODE}")
         st.error(f"Invalid API_MODE. Please check your configuration.")
         return None
-
+        
 def invoke_model(prompt, api_client, user_profile, context=""):
     
     past_trips = user_profile.get("past_trips", [])
@@ -87,7 +87,7 @@ TravelEase:"""
         try:
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 1000,
+                "max_tokens": 10000,
                 "messages": [
                     {
                         "role": "user",
@@ -252,6 +252,9 @@ def format_preferences(preferences):
 
 
 def transcribe_audio(audio_data):
+    print("---AWS_ACCESS_KEY_ID----",AWS_ACCESS_KEY_ID)
+    boto3.set_stream_logger('', logging.DEBUG)
+
     session = boto3.Session(
         aws_access_key_id=AWS_ACCESS_KEY_ID,
         aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
@@ -291,14 +294,13 @@ def transcribe_audio(audio_data):
         text = json.loads(response.text)['results']['transcripts'][0]['transcript']
         
         # Clean up
-        # s3_client.delete_object(Bucket=S3_BUCKET, Key=f"{job_name}.wav")
-        # os.remove('temp_audio.wav')
+        #s3_client.delete_object(Bucket=S3_BUCKET, Key=f"{job_name}.wav")
+        #os.remove('temp_audio.wav')
         
         return text
     else:
         logger.error("Transcription failed")
         return None
-
 
 def synthesize_speech(text):
     session = boto3.Session(
@@ -307,8 +309,8 @@ def synthesize_speech(text):
         aws_session_token=AWS_SESSION_TOKEN,  # Add this line
         region_name=AWS_REGION
     )
-    polly_client = session.client('polly', region_name=AWS_REGION)
-    
+    polly_client = session.client('polly')
+
     response = polly_client.synthesize_speech(
         Text=text,
         OutputFormat='mp3',
