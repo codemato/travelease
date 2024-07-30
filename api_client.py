@@ -252,15 +252,16 @@ def format_preferences(preferences):
 
 
 def transcribe_audio(audio_data):
-    transcribe_client = boto3.client('transcribe', 
-                                     region_name=AWS_REGION,
-                                     aws_access_key_id=AWS_ACCESS_KEY_ID,
-                                     aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+    session = boto3.Session(
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+        aws_session_token=AWS_SESSION_TOKEN,  # Add this line
+        region_name=AWS_REGION
+    )
+
+    transcribe_client = session.client('transcribe', region_name=AWS_REGION)
     
-    s3_client = boto3.client('s3',
-                             region_name=AWS_REGION,
-                             aws_access_key_id=AWS_ACCESS_KEY_ID,
-                             aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+    s3_client = session.client('s3', region_name=AWS_REGION)
     
     # Save audio data to a temporary file
     with open('temp_audio.wav', 'wb') as f:
@@ -290,19 +291,23 @@ def transcribe_audio(audio_data):
         text = json.loads(response.text)['results']['transcripts'][0]['transcript']
         
         # Clean up
-        s3_client.delete_object(Bucket=S3_BUCKET, Key=f"{job_name}.wav")
-        os.remove('temp_audio.wav')
+        # s3_client.delete_object(Bucket=S3_BUCKET, Key=f"{job_name}.wav")
+        # os.remove('temp_audio.wav')
         
         return text
     else:
         logger.error("Transcription failed")
         return None
 
+
 def synthesize_speech(text):
-    polly_client = boto3.client('polly',
-                                region_name=AWS_REGION,
-                                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                                aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+    session = boto3.Session(
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+        aws_session_token=AWS_SESSION_TOKEN,  # Add this line
+        region_name=AWS_REGION
+    )
+    polly_client = session.client('polly', region_name=AWS_REGION)
     
     response = polly_client.synthesize_speech(
         Text=text,
