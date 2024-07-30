@@ -1,0 +1,133 @@
+{
+    "data": [
+      {
+        "type": "flight-offer",
+        "id": "1",
+        "source": "GDS",
+        "instantTicketingRequired": false,
+        "nonHomogeneous": false,
+        "oneWay": false,
+        "lastTicketingDate": "2023-08-01",
+        "numberOfBookableSeats": 9,
+        "itineraries": [
+          {
+            "duration": "PT7H30M",
+            "segments": [
+              {
+                "departure": {
+                  "iataCode": "JFK",
+                  "terminal": "4",
+                  "at": "2023-08-15T23:05:00"
+                },
+                "arrival": {
+                  "iataCode": "LHR",
+                  "terminal": "3",
+                  "at": "2023-08-16T11:35:00"
+                },
+                "carrierCode": "DL",
+                "number": "2",
+                "aircraft": {
+                  "code": "764"
+                },
+                "operating": {
+                  "carrierCode": "DL"
+                },
+                "duration": "PT7H30M",
+                "id": "1",
+                "numberOfStops": 0,
+                "blacklistedInEU": false
+              }
+            ]
+          },
+          {
+            "duration": "PT7H40M",
+            "segments": [
+              {
+                "departure": {
+                  "iataCode": "LHR",
+                  "terminal": "3",
+                  "at": "2023-08-22T10:20:00"
+                },
+                "arrival": {
+                  "iataCode": "JFK",
+                  "terminal": "4",
+                  "at": "2023-08-22T13:00:00"
+                },
+                "carrierCode": "DL",
+                "number": "1",
+                "aircraft": {
+                  "code": "764"
+                },
+                "operating": {
+                  "carrierCode": "DL"
+                },
+                "duration": "PT7H40M",
+                "id": "2",
+                "numberOfStops": 0,
+                "blacklistedInEU": false
+              }
+            ]
+          }
+        ],
+        "price": {
+          "currency": "USD",
+          "total": "1200.00",
+          "base": "1000.00",
+          "fees": [
+            {
+              "amount": "0.00",
+              "type": "SUPPLIER"
+            },
+            {
+              "amount": "0.00",
+              "type": "TICKETING"
+            }
+          ],
+          "grandTotal": "1200.00"
+        },
+        "pricingOptions": {
+          "fareType": [
+            "PUBLISHED"
+          ],
+          "includedCheckedBagsOnly": true
+        },
+        "validatingAirlineCodes": [
+          "DL"
+        ],
+        "travelerPricings": [
+          {
+            "travelerId": "1",
+            "fareOption": "STANDARD",
+            "travelerType": "ADULT",
+            "price": {
+              "currency": "USD",
+              "total": "1200.00",
+              "base": "1000.00"
+            },
+            "fareDetailsBySegment": [
+              {
+                "segmentId": "1",
+                "cabin": "ECONOMY",
+                "fareBasis": "ULWC2L",
+                "brandedFare": "MAINCABIN",
+                "class": "U",
+                "includedCheckedBags": {
+                  "quantity": 1
+                }
+              },
+              {
+                "segmentId": "2",
+                "cabin": "ECONOMY",
+                "fareBasis": "ULWC2L",
+                "brandedFare": "MAINCABIN",
+                "class": "U",
+                "includedCheckedBags": {
+                  "quantity": 1
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
