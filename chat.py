@@ -334,13 +334,49 @@ def start_chat():
 
     if st.session_state.api_client:
         icon = Image.open("images/icon.png")
-         # Developer mode toggle
-        developer_mode = st.sidebar.checkbox("Developer Mode")       
-        # Display welcome message only once
-        if not st.session_state.welcome_displayed:
-            welcome_message = f"Welcome back, {st.session_state.username}! How can I assist you with your travel plans today?"
-            st.info(welcome_message)
-            st.session_state.welcome_displayed = True
+        
+        # Developer mode toggle
+        developer_mode = st.sidebar.checkbox("Developer Mode")
+        
+        # Display welcome message every time
+        welcome_message = f"Welcome back, {st.session_state.username}! How can I assist you with your travel plans today?"
+        st.info(welcome_message)
+        
+        # Create a fixed container for buttons
+        button_container = st.container()
+        
+        # Create a container for button responses
+        results_container = st.container()
+        
+        # Display buttons in the fixed container
+        with button_container:
+            st.markdown('<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">', unsafe_allow_html=True)
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                if st.button("My Trips"):
+                    with results_container:
+                        with st.spinner("Fetching your trip information..."):
+                            trip_info = invoke_model("Summarize my past and future trips", st.session_state.api_client, st.session_state.user_profile)
+                            st.markdown("### My Trips")
+                            st.write(trip_info)
+            with col2:
+                if st.button("My Offers"):
+                    with results_container:
+                        with st.spinner("Fetching your credit card offers..."):
+                            offer_info = invoke_model("Summarize the offers on my credit cards", st.session_state.api_client, st.session_state.user_profile)
+                            st.markdown("### My Offers")
+                            st.write(offer_info)
+            with col3:
+                if st.button("My Cards"):
+                    with results_container:
+                        with st.spinner("Fetching your card details..."):
+                            card_info = invoke_model("Summarize my credit card details and reward points", st.session_state.api_client, st.session_state.user_profile)
+                            st.markdown("### My Cards")
+                            st.write(card_info)
+            st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Add some space between the results and the chat history
+        st.markdown("<br>", unsafe_allow_html=True)
         
         # Display existing chat history
         for message in st.session_state.chat_history:
@@ -412,13 +448,10 @@ def start_chat():
             location = st.session_state.locations[0] if st.session_state.locations else "general"
             display_helper_buttons(location)
             display_button_results(location)
-            st.session_state.helper_buttons_displayed = True
-            
+        
         # Display debug information if in developer mode
         if developer_mode:
             display_debug_info(get_chat_context())
-        # Follow-up question
-        #display_follow_up_question()
 
     else:
         st.warning(f"TravelEase initialization failed. Please check your {API_MODE.capitalize()} credentials and try again.")
