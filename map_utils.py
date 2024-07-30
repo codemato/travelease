@@ -4,13 +4,24 @@ from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 import googlemaps
 import logging
-from config import USE_GOOGLE_MAPS, GOOGLE_MAPS_API_KEY, API_MODE, CLAUDE_MODEL_ID
+from config import USE_GOOGLE_MAPS, GOOGLE_MAPS_API_KEY, API_MODE, AWS_CLAUDE_MODEL_ID, AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN, CLAUDE_MODEL_ID
+import boto3
+import os
 import anthropic  # New import for native Claude API
 
 logger = logging.getLogger(__name__)
 
 if USE_GOOGLE_MAPS:
     gmaps = googlemaps.Client(key=GOOGLE_MAPS_API_KEY)
+
+if API_MODE == 'bedrock':
+    session = boto3.Session(
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+        aws_session_token=AWS_SESSION_TOKEN,
+        region_name=AWS_REGION
+    )
+    bedrock_client = session.client('bedrock-runtime')
 
 def extract_locations_llm(text, api_client):
     print("extract+locations+llm",text)
@@ -32,7 +43,7 @@ def extract_locations_llm(text, api_client):
         if API_MODE == 'bedrock':
             body = json.dumps({
                 "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 200,
+                "max_tokens": 1000,
                 "messages": [
                     {
                         "role": "user",
@@ -40,9 +51,9 @@ def extract_locations_llm(text, api_client):
                     }
                 ]
             })
-            response = api_client.invoke_model(
+            response = bedrock_client.invoke_model(
                 body=body,
-                modelId=CLAUDE_MODEL_ID,
+                modelId=AWS_CLAUDE_MODEL_ID,
                 accept='application/json',
                 contentType='application/json'
             )
@@ -202,9 +213,9 @@ def extract_place_info_llm(text, api_client):
                     }
                 ]
             })
-            response = api_client.invoke_model(
+            response = bedrock_client.invoke_model(
                 body=body,
-                modelId=CLAUDE_MODEL_ID,
+                modelId=AWS_CLAUDE_MODEL_ID,
                 accept='application/json',
                 contentType='application/json'
             )

@@ -9,7 +9,8 @@ USERS_FILE = 'users.json'
 USER_PROFILES_FILE = 'user_profiles.json'
 LOGO_PATH = "images/ease.png"
 ICON_PATH = "images/icon.png"
-CLAUDE_MODEL_ID = "anthropic.claude-3-sonnet-20240229-v1:0"
+CLAUDE_MODEL_ID = "claude-3-5-sonnet-20240620"
+AWS_CLAUDE_MODEL_ID = "anthropic.claude-3-5-sonnet-20240620-v1:0"
 API_MODE = os.getenv('API_MODE', 'huggingface')  # 'huggingface' or 'bedrock or native_claude'
 USE_GOOGLE_MAPS = os.getenv('USE_GOOGLE_MAPS', 'False').lower() == 'true'
 GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
@@ -29,6 +30,7 @@ DEFAULT_MODE = os.getenv('DEFAULT_MODE', 'standard')
 AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_SESSION_TOKEN = os.getenv('AWS_SESSION_TOKEN')
 S3_BUCKET = os.getenv('S3_BUCKET')
 BYPASS_LOGIN = os.getenv('BYPASS_LOGIN', 'False').lower() == 'true'
 BYPASS_USERNAME = os.getenv('BYPASS_USERNAME', 'renjith')

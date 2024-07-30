@@ -1,16 +1,26 @@
 import googlemaps
 from googlemaps import exceptions
 import logging
-from config import GOOGLE_MAPS_API_KEY, API_MODE, CLAUDE_MODEL_ID
+from config import GOOGLE_MAPS_API_KEY, API_MODE, CLAUDE_MODEL_ID, AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_CLAUDE_MODEL_ID, AWS_SESSION_TOKEN
 import json
 import base64
+import boto3
+import os
 
 logger = logging.getLogger(__name__)
 
 class GoogleReviews:
     def __init__(self):
         self.gmaps = googlemaps.Client(key=GOOGLE_MAPS_API_KEY)
-        
+        if API_MODE == 'bedrock':
+            session = boto3.Session(
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                aws_session_token=AWS_SESSION_TOKEN,
+                region_name=AWS_REGION
+            )
+            self.bedrock_client = session.client('bedrock-runtime') 
+
     def get_place_id(self, place_name, location=None):
         try:
             places_result = self.gmaps.places(query=place_name, location=location)
@@ -114,9 +124,9 @@ class GoogleReviews:
                         }
                     ]
                 })
-                response = api_client.invoke_model(
+                response = self.bedrock_client.invoke_model(
                     body=body,
-                    modelId=CLAUDE_MODEL_ID,
+                    modelId=AWS_CLAUDE_MODEL_ID,
                     accept='application/json',
                     contentType='application/json'
                 )
@@ -127,7 +137,7 @@ class GoogleReviews:
                 summary_json = str(response)
             elif API_MODE == 'native_claude':
                 response = api_client.messages.create(
-                    model="claude-3-sonnet-20240229",
+                    model="claude-3-5-sonnet-20240620",
                     max_tokens=500,
                     messages=[
                         {
