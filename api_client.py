@@ -18,10 +18,10 @@ def initialize_api_client():
     if API_MODE == 'bedrock':
         try:
             session = boto3.Session(
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                aws_session_token=AWS_SESSION_TOKEN,  # Add this line
-                region_name=AWS_REGION
+                # aws_access_key_id=AWS_ACCESS_KEY_ID,
+                # aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                # aws_session_token=AWS_SESSION_TOKEN,  # Add this line
+                # region_name=AWS_REGION
             )
             bedrock_client = session.client('bedrock-runtime')
             return bedrock_client
@@ -270,10 +270,10 @@ def transcribe_audio(audio_data):
     boto3.set_stream_logger('', logging.DEBUG)
 
     session = boto3.Session(
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-        aws_session_token=AWS_SESSION_TOKEN,  # Add this line
-        region_name=AWS_REGION
+        # aws_access_key_id=AWS_ACCESS_KEY_ID,
+        # aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+        # aws_session_token=AWS_SESSION_TOKEN,  # Add this line
+        # region_name=AWS_REGION
     )
 
     transcribe_client = session.client('transcribe', region_name=AWS_REGION)
@@ -318,10 +318,10 @@ def transcribe_audio(audio_data):
 
 def synthesize_speech(text):
     session = boto3.Session(
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-        aws_session_token=AWS_SESSION_TOKEN,  # Add this line
-        region_name=AWS_REGION
+        # aws_access_key_id=AWS_ACCESS_KEY_ID,
+        # aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+        # aws_session_token=AWS_SESSION_TOKEN,  # Add this line
+        # region_name=AWS_REGION
     )
     polly_client = session.client('polly')
 
