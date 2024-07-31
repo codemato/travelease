@@ -137,20 +137,30 @@
         "dietary_restrictions": ["Vegetarian"]
       },
       "shopping": {
-        "preferred_stores": ["Whole Foods", "REI", "Apple Store"],
-        "online_retailers": ["Amazon", "Etsy"]
+        "preferred_stores": ["Whole Foods", "REI", "Local Shops", "Local Markets"],
+        "online_retailers": ["Amazon", "Etsy"],
+        "shopping_items": ["Souvenirs", "Local Crafts", "Dress", "Jewelery", "Perfumes", "Handicrafts"]
       },
       "entertainment": {
-        "streaming_services": ["Netflix", "Spotify"],
-        "hobbies": ["Yoga", "Hiking", "Photography"]
+        "streaming_services": ["Netflix", "Spotify"]
+      },
+      "activities": {
+        "hobbies": ["Yoga", "Hiking", "Photography", "Sight Seeing", "Beach Activities", "Skiing", "Surfing", "Scuba Diving"]
       },
       "travel": {
-        "preferred_airlines": ["Singapore Airlines", "Emirates"],
-        "hotel_chains": ["Marriott", "Hilton"],
-        "travel_style": ["Eco-friendly", "Cultural experiences"]
+        "preferred_airlines": ["Singapore Airlines", "Emirates","Qatar Airways", "British Airways", "American Airlines", "Air India"],
+        "hotel_chains": ["Marriott", "Hilton", "Hyatt", "Conrad"],
+        "travel_style": ["Eco-friendly", "Cultural experiences"],
+        "travel_purpose": ["vacation", "Leisure"],
+        "duration": ["3 days", "5 days"]
       }
     },
-    "country": "India"
+    "profile": {
+      "country": "USA",
+      "birth_date": "23/06/1985",
+      "anniversary_date": "11/11/2010"
+    },
+    "country": "USA"
   },
   "jay": {
     "past_trips": [
@@ -269,20 +279,30 @@
         "dietary_restrictions": ["Gluten-free"]
       },
       "shopping": {
-        "preferred_stores": ["Nordstrom", "Best Buy", "Home Depot"],
-        "online_retailers": ["Amazon", "Wayfair"]
+        "preferred_stores": ["Whole Foods", "REI", "Local Shops", "Local Markets"],
+        "online_retailers": ["Amazon", "Etsy"],
+        "shopping_items": ["Souvenirs", "Local Crafts", "Dress", "Jewelery", "Perfumes", "Handicrafts"]
       },
       "entertainment": {
-        "streaming_services": ["HBO Max", "Disney+"],
-        "hobbies": ["Golf", "Wine tasting", "Fitness"]
+        "streaming_services": ["Netflix", "Spotify"]
+      },
+      "activities": {
+        "hobbies": ["Yoga", "Hiking", "Photography", "Sight Seeing", "Beach Activities", "Skiing", "Surfing", "Scuba Diving"]
       },
       "travel": {
-        "preferred_airlines": ["Delta", "United"],
-        "hotel_chains": ["Hyatt", "Four Seasons"],
-        "travel_style": ["Luxury", "Adventure"]
+        "preferred_airlines": ["Singapore Airlines", "Emirates","Qatar Airways", "British Airways", "American Airlines", "Air India"],
+        "hotel_chains": ["Marriott", "Hilton", "Hyatt", "Conrad"],
+        "travel_style": ["Eco-friendly", "Cultural experiences"],
+        "travel_purpose": ["vacation", "Leisure"],
+        "duration": ["3 days", "5 days"]
       }
     },
-    "country": "India"
+    "profile": {
+      "country": "USA",
+      "birth_date": "23/06/1985",
+      "anniversary_date": "11/11/2010"
+    },
+    "country": "USA"
   },
   "jane": {
     "past_trips": [
@@ -422,8 +442,9 @@
         "dietary_restrictions": ["Vegetarian"]
       },
       "shopping": {
-        "preferred_stores": ["Whole Foods", "REI", "Apple Store"],
-        "online_retailers": ["Amazon", "Etsy"]
+        "preferred_stores": ["Whole Foods", "REI", "Local Shops", "Local Markets"],
+        "online_retailers": ["Amazon", "Etsy"],
+        "shopping_items": ["Souvenirs", "Local Crafts", "Dress", "Jewelery", "Perfumes", "Handicrafts"]
       },
       "entertainment": {
         "streaming_services": ["Netflix", "Spotify"]
