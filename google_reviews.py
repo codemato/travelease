@@ -9,17 +9,13 @@ import os
 
 logger = logging.getLogger(__name__)
 
+
 class GoogleReviews:
     def __init__(self):
         self.gmaps = googlemaps.Client(key=GOOGLE_MAPS_API_KEY)
         if API_MODE == 'bedrock':
-            session = boto3.Session(
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                aws_session_token=AWS_SESSION_TOKEN,
-                region_name=AWS_REGION
-            )
-            self.bedrock_client = session.client('bedrock-runtime') 
+            session = boto3.session.Session()
+            self.bedrock_client = session.client('bedrock-runtime')
 
     def get_place_id(self, place_name, location=None):
         try:
@@ -63,7 +59,7 @@ class GoogleReviews:
         except exceptions.ApiError as e:
             logger.error(f"Error fetching reviews: {str(e)}")
             return None
-        
+
     def get_photo(self, photo_reference, max_width=400):
         try:
             photo = self.gmaps.places_photo(photo_reference, max_width=max_width)
@@ -77,7 +73,7 @@ class GoogleReviews:
         except exceptions.ApiError as e:
             logger.error(f"Error fetching photo: {str(e)}")
             return None
-  
+
     def summarize_reviews(self, reviews, api_client):
         if not reviews:
             logger.info("No reviews found to summarize.")
@@ -153,8 +149,8 @@ class GoogleReviews:
                 summary_json = summary_json[7:-3]
             json_end = summary_json.rfind('}')
             if json_end != -1:
-                summary_json = summary_json[:json_end+1]
-                
+                summary_json = summary_json[:json_end + 1]
+
             try:
                 summary = json.loads(summary_json)
                 return summary
@@ -176,18 +172,21 @@ class GoogleReviews:
                 "score": 0
             }
 
+
 def get_hotel_reviews(hotel_name, location=None, max_reviews=5):
     reviewer = GoogleReviews()
     return reviewer.get_reviews(hotel_name, location, max_reviews)
+
 
 def get_place_photo(photo_reference, max_width=800):
     reviewer = GoogleReviews()
     return reviewer.get_photo(photo_reference, max_width)
 
+
 def get_hotel_reviews_summary(hotel_name, api_client, location=None, max_reviews=5):
     reviewer = GoogleReviews()
     reviews_data = reviewer.get_reviews(hotel_name, location, max_reviews)
-    
+
     if reviews_data:
         summary = reviewer.summarize_reviews(reviews_data['reviews'], api_client)
         if summary:

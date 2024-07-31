@@ -15,12 +15,7 @@ if USE_GOOGLE_MAPS:
     gmaps = googlemaps.Client(key=GOOGLE_MAPS_API_KEY)
 
 if API_MODE == 'bedrock':
-    session = boto3.Session(
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-        aws_session_token=AWS_SESSION_TOKEN,
-        region_name=AWS_REGION
-    )
+    session = boto3.session.Session()
     bedrock_client = session.client('bedrock-runtime')
 
 def extract_locations_llm(text, api_client):

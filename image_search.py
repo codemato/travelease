@@ -7,23 +7,25 @@ import json
 import logging
 from io import BytesIO
 import boto3
-from config import AWS_ACCESS_KEY_ID, AWS_REGION, AWS_SECRET_ACCESS_KEY,AWS_SESSION_TOKEN
+from config import AWS_ACCESS_KEY_ID, AWS_REGION, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN
 from jsonschema import validate
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+
 def set_page(page):
     st.session_state.page = page
 
+
 def format_analysis_response(response):
     st.title(f"Destination Spotlight: {response['identified_location']}")
-    
+
     # Overview
     st.header("📍 Overview")
     st.write(response['main_elements']['overall_scene'])
-   # st.write(f"**Confidence Level:** {response['confidence_level']}")
+    # st.write(f"**Confidence Level:** {response['confidence_level']}")
 
     # Distinctive Features
     st.header("🏛️ Distinctive Features")
@@ -72,27 +74,31 @@ def format_analysis_response(response):
     # if st.button("Start Planning"):
     #     st.button("Chat", on_click=set_page, args=("chat",))
 
+
 def encode_image(image_file):
     return base64.b64encode(image_file.getvalue()).decode('utf-8')
+
 
 def compress_image(image, max_size=(1024, 1024), quality=95):
     """Compress and resize an image to reduce its size while maintaining quality."""
     img = image.copy()
     img.thumbnail(max_size)
-    
+
     # Convert to RGB if the image has an alpha channel
     if img.mode in ('RGBA', 'LA'):
         background = Image.new('RGB', img.size, (255, 255, 255))
         background.paste(img, mask=img.split()[3])  # 3 is the alpha channel
         img = background
-    
+
     buffered = BytesIO()
     img.save(buffered, format="JPEG", quality=quality)
     return buffered.getvalue()
 
+
 def image_to_base64(image_bytes):
     """Convert image bytes to base64 string."""
     return base64.b64encode(image_bytes).decode('utf-8')
+
 
 def get_image_download_link(img, filename, text):
     """Generate a download link for the given image."""
@@ -101,6 +107,7 @@ def get_image_download_link(img, filename, text):
     img_str = base64.b64encode(buffered.getvalue()).decode()
     href = f'<a href="data:file/jpg;base64,{img_str}" download="{filename}">{text}</a>'
     return href
+
 
 schema = {
     "type": "object",
@@ -142,6 +149,7 @@ schema = {
         "local_cuisine", "tourist_activities", "initial_thoughts"
     ]
 }
+
 
 def analyze_image(client, image_base64):
     prompt = """
@@ -225,45 +233,36 @@ def analyze_image(client, image_base64):
         logger.error(f"Error in analyze_image: {str(e)}")
         raise
 
+
 def image_search_page():
     st.title("Search by Image")
 
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png", "webp"])
-    
-    if uploaded_file is not None:
-        st.image(uploaded_file, caption='Uploaded Image.', use_column_width=True)
-        
-        if st.button("Analyze Image"):
-            with st.spinner('Analyzing image...'):
-                base64_image = encode_image(uploaded_file)
-                session = boto3.Session(
-                    aws_access_key_id=AWS_ACCESS_KEY_ID,
-                    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                    aws_session_token=AWS_SESSION_TOKEN,
-                    region_name=AWS_REGION
-                )
-                bedrock = session.client('bedrock-runtime')
-                response = analyze_image(bedrock, base64_image)
-                
-                format_analysis_response(response)
 
-                if st.button("Plan a Trip to This Location"):
-                    chat_message = f"I've found an interesting location: {response['identified_location']}. Here's some information about it:\n\n"
-                    chat_message += f"• Overview: {response['main_elements']['overall_scene']}\n"
-                    chat_message += f"• Historical Significance: {response['historical_info']}\n"
-                    chat_message += f"• Cultural Significance: {response['cultural_significance']}\n"
-                    chat_message += f"• Top Activities: {', '.join(response['tourist_activities'][:3])}\n"
-                    
-                    if 'chat_history' not in st.session_state:
-                        st.session_state.chat_history = []
-                    st.session_state.chat_history.append({"role": "assistant", "content": chat_message})
-                    
-                    st.session_state.prompt_trip_planning = True
-                    st.session_state.last_identified_location = response['identified_location']
-                    st.session_state.page = "chat"
-                    
-                    st.success("Great! Let's plan your trip. Click on the 'Chat' button in the sidebar to start planning.")
+    if uploaded_file is not None:
+        try:
+
+            st.image(uploaded_file, caption='Uploaded Image.', use_column_width=True)
+
+            if st.button("Analyze Image"):
+                with st.spinner('Analyzing image...'):
+                    base64_image = encode_image(uploaded_file)
+
+                    session = boto3.session.Session()
+                    bedrock = session.client('bedrock-runtime')
+                    response = analyze_image(bedrock, base64_image)
+                    # Display raw response
+                    #st.subheader("Raw Response from Model")
+                    #st.code(response)
+                    #logger.debug("res",response)
+                    format_analysis_response(response)
+
+
+
+        except Exception as e:
+            logger.error(f"Error opening or processing the image: {str(e)}")
+            st.error(f"Error opening or processing the image. Please try another image. Error: {str(e)}")
+
 
 if __name__ == "__main__":
     image_search_page()
-    
