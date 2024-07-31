@@ -236,12 +236,7 @@ def image_search_page():
         if st.button("Analyze Image"):
             with st.spinner('Analyzing image...'):
                 base64_image = encode_image(uploaded_file)
-                session = boto3.Session(
-                    aws_access_key_id=AWS_ACCESS_KEY_ID,
-                    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                    aws_session_token=AWS_SESSION_TOKEN,
-                    region_name=AWS_REGION
-                )
+                session = boto3.Session()
                 bedrock = session.client('bedrock-runtime')
                 response = analyze_image(bedrock, base64_image)
                 

@@ -17,12 +17,7 @@ logger = logging.getLogger(__name__)
 def initialize_api_client():
     if API_MODE == 'bedrock':
         try:
-            session = boto3.Session(
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                aws_session_token=AWS_SESSION_TOKEN,  # Add this line
-                region_name=AWS_REGION
-            )
+            session = boto3.Session()
             bedrock_client = session.client('bedrock-runtime')
             return bedrock_client
         except Exception as e:
@@ -269,12 +264,7 @@ def transcribe_audio(audio_data):
     print("---AWS_ACCESS_KEY_ID----",AWS_ACCESS_KEY_ID)
     boto3.set_stream_logger('', logging.DEBUG)
 
-    session = boto3.Session(
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-        aws_session_token=AWS_SESSION_TOKEN,  # Add this line
-        region_name=AWS_REGION
-    )
+    session = boto3.Session()
 
     transcribe_client = session.client('transcribe', region_name=AWS_REGION)
     
@@ -317,12 +307,7 @@ def transcribe_audio(audio_data):
         return None
 
 def synthesize_speech(text):
-    session = boto3.Session(
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-        aws_session_token=AWS_SESSION_TOKEN,  # Add this line
-        region_name=AWS_REGION
-    )
+    session = boto3.Session()
     polly_client = session.client('polly')
 
     response = polly_client.synthesize_speech(
