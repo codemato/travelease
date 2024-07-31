@@ -26,7 +26,7 @@ references when appropriate. In case the search intent is related to flight sear
 MAP_CATEGORIES = ['hotel', 'restaurant', 'attraction', 'landmark']
 # Default mode
 DEFAULT_MODE = os.getenv('DEFAULT_MODE', 'standard')
-
+USE_MOCK_DATA = os.getenv('USE_MOCK_DATA', 'False').lower() == 'true'
 AWS_REGION = os.getenv('AWS_REGION', 'us-east-1')
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
