@@ -58,11 +58,12 @@ def invoke_model(prompt, api_client, user_profile, context=""):
     upcoming_trips = user_profile.get("upcoming_trips", [])
     credit_cards = user_profile.get("credit_cards", [])
     preferences = user_profile.get("preferences", {})
-
+    profile = user_profile.get("profile", {})
     past_trips_info = "Past Trips:\n" + "\n".join([format_trip_details(trip) for trip in past_trips])
     upcoming_trips_info = "Upcoming Trips:\n" + "\n".join([format_trip_details(trip) for trip in upcoming_trips])
     credit_cards_info = "Credit Cards:\n" + "\n".join([format_credit_card_info(card) for card in credit_cards])
     preferences_info = format_preferences(preferences)
+    personal_profile = format_personal_profile(profile)
 
     full_prompt = f"""{VOYAGE_PROMPT}
 
@@ -75,6 +76,8 @@ User Profile Information:
 {credit_cards_info}
 
 {preferences_info}
+
+{personal_profile}
 
 Recent Conversation:
 {context}
@@ -240,15 +243,26 @@ def format_preferences(preferences):
     pref_info += f"  - Dietary restrictions: {', '.join(preferences['dining']['dietary_restrictions'])}\n"
     pref_info += "Shopping:\n"
     pref_info += f"  - Preferred stores: {', '.join(preferences['shopping']['preferred_stores'])}\n"
+    pref_info += f"  - Preferred Shopping Items: {', '.join(preferences['shopping']['shopping_items'])}\n"
     pref_info += f"  - Online retailers: {', '.join(preferences['shopping']['online_retailers'])}\n"
     pref_info += "Entertainment:\n"
     pref_info += f"  - Streaming services: {', '.join(preferences['entertainment']['streaming_services'])}\n"
-    pref_info += f"  - Hobbies: {', '.join(preferences['entertainment']['hobbies'])}\n"
+    pref_info += "Activities:\n"
+    pref_info += f"  - Hobbies: {', '.join(preferences['activities']['hobbies'])}\n"
     pref_info += "Travel:\n"
     pref_info += f"  - Preferred airlines: {', '.join(preferences['travel']['preferred_airlines'])}\n"
     pref_info += f"  - Preferred hotel chains: {', '.join(preferences['travel']['hotel_chains'])}\n"
     pref_info += f"  - Travel style: {', '.join(preferences['travel']['travel_style'])}\n"
+    pref_info += f"  - Travel purpose: {', '.join(preferences['travel']['travel_purpose'])}\n"
+    pref_info += f"  - Preferred trip duration: {', '.join(preferences['travel']['duration'])}\n"
     return pref_info
+
+def format_personal_profile(profile):
+    profile_info = "Personal Profile:\n"
+    profile_info += f"  - Country: {profile['country']}\n"
+    profile_info += f"  - Date of Birth: {profile['birth_date']}\n"
+    profile_info += f"  - Anniversary Date: {profile['anniversary_date']}\n"
+    return profile_info
 
 
 def transcribe_audio(audio_data):

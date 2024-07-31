@@ -645,19 +645,21 @@
         "frequently_visited_restaurants": [
           "Green Leaf Vegetarian",
           "Pizza Express",
-          "Thai Orchid"
+          "Thai Orchid",
+          "Star Bucks"
         ],
         "dietary_restrictions": ["Vegetarian"]
       },
       "shopping": {
-        "preferred_stores": ["Whole Foods", "REI", "Apple Store"],
-        "online_retailers": ["Amazon", "Etsy"]
+        "preferred_stores": ["Whole Foods", "REI", "Local Shops", "Local Markets"],
+        "online_retailers": ["Amazon", "Etsy"],
+        "shopping_items": ["Souvenirs", "Local Crafts", "Dress", "Jewelery", "Perfumes", "Handicrafts"]
       },
       "entertainment": {
         "streaming_services": ["Netflix", "Spotify"]
       },
       "activities": {
-        "hobbies": ["Yoga", "Hiking", "Photography", "Sight Seeing", "Beach Activities", "Skiing", "Surfing", "Scuba Diving"]
+        "hobbies": ["Yoga", "Hiking", "Photography", "Sight Seeing", "Beach Activities", "Skiing", "Surfing", "Scuba Diving","Camping", "Zoo", "aquariums"]
       },
       "travel": {
         "preferred_airlines": ["Singapore Airlines", "Emirates", "Qatar Airways", "British Airways", "American Airlines", "Air India"],

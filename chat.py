@@ -372,7 +372,7 @@ def start_chat():
                         with st.spinner("Fetching your card details..."):
                             card_info = invoke_model("Summarize my past and future trips", st.session_state.api_client, st.session_state.user_profile)
                             st.markdown("### My Trips")
-                            st.write(trip_info)
+                            st.write(card_info)
             st.markdown('</div>', unsafe_allow_html=True)
         
         # Add some space between the results and the chat history
