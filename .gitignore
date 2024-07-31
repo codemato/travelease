@@ -4,3 +4,12 @@
 .streamlit/
 images/.DS_Store
 __pycache__
+bin/
+venv/
+lib/
+lib64/
+docs/
+etc/
+share/
+utils/
+
