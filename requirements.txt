@@ -14,3 +14,4 @@ soundfile
 streamlit_option_menu
 requests
 streamlit-searchbox
+amadeus
