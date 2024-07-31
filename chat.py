@@ -353,11 +353,11 @@ def start_chat():
             st.markdown('<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">', unsafe_allow_html=True)
             col1, col2, col3 = st.columns(3)
             with col1:
-                if st.button("My Trips"):
+                if st.button("Plan a new Trip"):
                     with results_container:
-                        with st.spinner("Fetching your trip information..."):
-                            trip_info = invoke_model("Summarize my past and future trips", st.session_state.api_client, st.session_state.user_profile)
-                            st.markdown("### My Trips")
+                        with st.spinner("Planning your new trip.."):
+                            trip_info = invoke_model("Plan a new trip based on his user profile, preferences", st.session_state.api_client, st.session_state.user_profile)
+                            st.markdown("### Plan a new Trip")
                             st.write(trip_info)
             with col2:
                 if st.button("My Offers"):
@@ -367,12 +367,12 @@ def start_chat():
                             st.markdown("### My Offers")
                             st.write(offer_info)
             with col3:
-                if st.button("My Cards"):
+                if st.button("My Trips"):
                     with results_container:
                         with st.spinner("Fetching your card details..."):
-                            card_info = invoke_model("Summarize my credit card details and reward points", st.session_state.api_client, st.session_state.user_profile)
-                            st.markdown("### My Cards")
-                            st.write(card_info)
+                            card_info = invoke_model("Summarize my past and future trips", st.session_state.api_client, st.session_state.user_profile)
+                            st.markdown("### My Trips")
+                            st.write(trip_info)
             st.markdown('</div>', unsafe_allow_html=True)
         
         # Add some space between the results and the chat history
@@ -383,15 +383,26 @@ def start_chat():
             with st.chat_message(message["role"], avatar=icon if message["role"] == "assistant" else None):
                 st.markdown(message["content"])
         
-        # Chat input
-        prompt = st.chat_input("What can TravelEase assist you with today?")
+        # Check if we need to prompt for trip planning
+        if st.session_state.get('prompt_trip_planning', False):
+            location = st.session_state.get('last_identified_location', 'the location you found')
+            prompt = f"Great! I'd be happy to help you plan a trip to {location}. What would you like to know about planning a trip there? For example, I can help with information about accommodations, transportation, attractions, or the best time to visit."
+            
+            with st.chat_message("assistant", avatar=icon):
+                st.markdown(prompt)
+            
+            st.session_state.chat_history.append({"role": "assistant", "content": prompt})
+            st.session_state.prompt_trip_planning = False
         
-        if prompt:
+        # Chat input
+        user_input = st.chat_input("What can TravelEase assist you with today?")
+        
+        if user_input:
             # Display user message
-            st.chat_message("user").markdown(prompt)
+            st.chat_message("user").markdown(user_input)
             
             # Add user message to chat history
-            st.session_state.chat_history.append({"role": "user", "content": prompt})
+            st.session_state.chat_history.append({"role": "user", "content": user_input})
 
             with st.spinner("Thinking..."):
                 try:
@@ -402,7 +413,7 @@ def start_chat():
                     if developer_mode:
                         display_debug_info(context)
 
-                    full_response = invoke_model(prompt, st.session_state.api_client, st.session_state.user_profile, context=context)
+                    full_response = invoke_model(user_input, st.session_state.api_client, st.session_state.user_profile, context=context)
                     
                     # Display assistant response
                     with st.chat_message("assistant", avatar=icon):

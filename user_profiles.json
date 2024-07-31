@@ -283,5 +283,395 @@
       }
     },
     "country": "India"
+  },
+  "jane": {
+    "past_trips": [
+      {
+        "destination": "Paris, France",
+        "date": "Summer 2023",
+        "flight": {
+          "departure": "2023-06-15",
+          "return": "2023-06-25",
+          "class": "Economy",
+          "stopover": {
+            "city": "London",
+            "duration": "3 hours"
+          },
+          "preferences": ["window seat", "vegetarian meal"]
+        },
+        "hotel": {
+          "name": "Le Petit Château",
+          "class": "4-star",
+          "nights": 10,
+          "location": "6th arrondissement",
+          "preferences": ["non-smoking", "high floor"]
+        }
+      },
+      {
+        "destination": "Tokyo, Japan",
+        "date": "Spring 2024",
+        "flight": {
+          "departure": "2024-04-03",
+          "return": "2024-04-14",
+          "class": "Business",
+          "stopover": null,
+          "preferences": ["aisle seat", "lactose-free meal"]
+        },
+        "hotel": {
+          "name": "Sakura Sky Tower",
+          "class": "5-star",
+          "nights": 11,
+          "location": "Shinjuku",
+          "preferences": ["city view", "on-site spa"]
+        }
+      }
+    ],
+    "upcoming_trips": [
+      {
+        "destination": "Bali, Indonesia",
+        "date": "Winter 2024",
+        "flight": {
+          "departure": "2024-12-20",
+          "return": "2025-01-05",
+          "class": "Premium Economy",
+          "stopover": {
+            "city": "Singapore",
+            "duration": "5 hours"
+          },
+          "preferences": ["extra legroom", "seafood meal"]
+        },
+        "hotel": {
+          "name": "Tropical Paradise Resort",
+          "class": "5-star",
+          "nights": 16,
+          "location": "Ubud",
+          "preferences": ["private pool villa", "yoga classes"]
+        }
+      }
+    ],
+    "credit_cards": [
+      {
+        "name": "Chase Sapphire Reserve",
+        "rewards_points": 120000,
+        "offers": [
+          {
+            "description": "5x points on flights booked through Chase Ultimate Rewards",
+            "expiry": "2024-12-31"
+          },
+          {
+            "description": "$100 statement credit on hotel stays of $500 or more",
+            "expiry": "2024-09-30"
+          },
+          {
+            "description": "10% cash back at select restaurants",
+            "expiry": "2024-08-31"
+          }
+        ],
+        "partnerships": [
+          {
+            "brand": "Lyft",
+            "benefit": "10x points on Lyft rides"
+          },
+          {
+            "brand": "DoorDash",
+            "benefit": "Free DashPass subscription"
+          },
+          {
+            "brand": "OpenTable",
+            "benefit": "Extra points on restaurant reservations"
+          }
+        ]
+      },
+      {
+        "name": "Chase Freedom Flex",
+        "rewards_points": 35000,
+        "offers": [
+          {
+            "description": "5% cash back on grocery store purchases",
+            "expiry": "2024-09-30"
+          },
+          {
+            "description": "$20 statement credit on streaming services",
+            "expiry": "2024-12-31"
+          },
+          {
+            "description": "3% cash back at restaurants, including takeout and delivery",
+            "expiry": "Ongoing"
+          }
+        ],
+        "partnerships": [
+          {
+            "brand": "ShopRunner",
+            "benefit": "Free 2-day shipping"
+          },
+          {
+            "brand": "Fandango",
+            "benefit": "Extra cash back on movie tickets"
+          }
+        ]
+      }
+    ],
+    "preferences": {
+      "dining": {
+        "favorite_cuisines": ["Italian", "Thai", "Vegetarian", "Local Cuisine"],
+        "frequently_visited_restaurants": [
+          "Green Leaf Vegetarian",
+          "Pizza Express",
+          "Thai Orchid"
+        ],
+        "dietary_restrictions": ["Vegetarian"]
+      },
+      "shopping": {
+        "preferred_stores": ["Whole Foods", "REI", "Apple Store"],
+        "online_retailers": ["Amazon", "Etsy"]
+      },
+      "entertainment": {
+        "streaming_services": ["Netflix", "Spotify"]
+      },
+      "activities": {
+        "hobbies": ["Yoga", "Hiking", "Photography", "Sight Seeing", "Beach Activities", "Skiing", "Surfing", "Scuba Diving"]
+      },
+      "travel": {
+        "preferred_airlines": ["Singapore Airlines", "Emirates","Qatar Airways", "British Airways", "American Airlines", "Air India"],
+        "hotel_chains": ["Marriott", "Hilton", "Hyatt", "Conrad"],
+        "travel_style": ["Eco-friendly", "Cultural experiences"],
+        "travel_purpose": ["vacation", "Leisure"],
+        "duration": ["3 days", "5 days"]
+      }
+    },
+    "profile": {
+      "country": "USA",
+      "birth_date": "23/06/1985",
+      "anniversary_date": "11/11/1985"
+    },
+    "country": "USA"
+
+  },"john": {
+    "past_trips": [
+      {
+        "destination": "Santorini, Greece",
+        "date": "Summer 2023",
+        "flight": {
+          "airline": "Emirates",
+          "departure": "2023-06-20",
+          "return": "2023-06-30",
+          "class": "Business",
+          "stopover": {
+            "city": "Athens",
+            "duration": "2 hours"
+          },
+          "preferences": ["window seat", "vegetarian meal"]
+        },
+        "hotel": {
+          "name": "Canaves Oia Suites",
+          "class": "5-star",
+          "nights": 10,
+          "location": "Oia",
+          "preferences": ["caldera view", "private plunge pool"]
+        }
+      },
+      {
+        "destination": "Kyoto, Japan",
+        "date": "Spring 2024",
+        "flight": {
+          "airline": "Singapore Airlines",
+          "departure": "2024-04-03",
+          "return": "2024-04-14",
+          "class": "Business",
+          "stopover": null,
+          "preferences": ["aisle seat", "lactose-free meal"]
+        },
+        "hotel": {
+          "name": "Aman Kyoto",
+          "class": "5-star",
+          "nights": 11,
+          "location": "Takagamine",
+          "preferences": ["garden view", "onsen experience"]
+        }
+      },
+      {
+        "destination": "Seychelles",
+        "date": "Summer 2022",
+        "flight": {
+          "airline": "Qatar Airways",
+          "departure": "2022-06-18",
+          "return": "2022-06-28",
+          "class": "First",
+          "stopover": {
+            "city": "Doha",
+            "duration": "3 hours"
+          },
+          "preferences": ["suite", "champagne service"]
+        },
+        "hotel": {
+          "name": "Six Senses Zil Pasyon",
+          "class": "5-star",
+          "nights": 10,
+          "location": "Félicité Island",
+          "preferences": ["ocean front pool villa", "private butler"]
+        }
+      },
+      {
+        "destination": "Swiss Alps, Switzerland",
+        "date": "Winter 2023",
+        "flight": {
+          "airline": "British Airways",
+          "departure": "2023-12-22",
+          "return": "2023-12-30",
+          "class": "First",
+          "stopover": null,
+          "preferences": ["extra legroom", "ski equipment allowance"]
+        },
+        "hotel": {
+          "name": "The Chedi Andermatt",
+          "class": "5-star",
+          "nights": 8,
+          "location": "Andermatt",
+          "preferences": ["mountain view suite", "spa access"]
+        }
+      },
+      {
+        "destination": "Marrakech, Morocco",
+        "date": "Fall 2021",
+        "flight": {
+          "airline": "Air India",
+          "departure": "2021-11-08",
+          "return": "2021-11-18",
+          "class": "Business",
+          "stopover": {
+            "city": "Mumbai",
+            "duration": "4 hours"
+          },
+          "preferences": ["aisle seat", "halal meal option"]
+        },
+        "hotel": {
+          "name": "Royal Mansour Marrakech",
+          "class": "5-star",
+          "nights": 10,
+          "location": "Medina",
+          "preferences": ["private riad", "hammam experience"]
+        }
+      }
+    ],
+    "upcoming_trips": [
+      {
+        "destination": "Queenstown, New Zealand",
+        "date": "Winter 2024",
+        "flight": {
+          "airline": "Singapore Airlines",
+          "departure": "2024-12-20",
+          "return": "2025-01-05",
+          "class": "Business",
+          "stopover": {
+            "city": "Singapore",
+            "duration": "5 hours"
+          },
+          "preferences": ["extra legroom", "seafood meal"]
+        },
+        "hotel": {
+          "name": "Matakauri Lodge",
+          "class": "5-star",
+          "nights": 16,
+          "location": "Closeburn Station",
+          "preferences": ["lake view suite", "private helicopter tour"]
+        }
+      }
+    ],
+    "credit_cards": [
+      {
+        "name": "Chase Sapphire Reserve",
+        "rewards_points": 120000,
+        "offers": [
+          {
+            "description": "5x points on flights booked through Chase Ultimate Rewards",
+            "expiry": "2024-12-31"
+          },
+          {
+            "description": "$100 statement credit on hotel stays of $500 or more",
+            "expiry": "2024-09-30"
+          },
+          {
+            "description": "10% cash back at select restaurants",
+            "expiry": "2024-08-31"
+          }
+        ],
+        "partnerships": [
+          {
+            "brand": "Lyft",
+            "benefit": "10x points on Lyft rides"
+          },
+          {
+            "brand": "DoorDash",
+            "benefit": "Free DashPass subscription"
+          },
+          {
+            "brand": "OpenTable",
+            "benefit": "Extra points on restaurant reservations"
+          }
+        ]
+      },
+      {
+        "name": "Chase Freedom Flex",
+        "rewards_points": 35000,
+        "offers": [
+          {
+            "description": "5% cash back on grocery store purchases",
+            "expiry": "2024-09-30"
+          },
+          {
+            "description": "$20 statement credit on streaming services",
+            "expiry": "2024-12-31"
+          },
+          {
+            "description": "3% cash back at restaurants, including takeout and delivery",
+            "expiry": "Ongoing"
+          }
+        ],
+        "partnerships": [
+          {
+            "brand": "ShopRunner",
+            "benefit": "Free 2-day shipping"
+          },
+          {
+            "brand": "Fandango",
+            "benefit": "Extra cash back on movie tickets"
+          }
+        ]
+      }
+    ],
+    "preferences": {
+      "dining": {
+        "favorite_cuisines": ["Italian", "Thai", "Vegetarian", "Local Cuisine"],
+        "frequently_visited_restaurants": [
+          "Green Leaf Vegetarian",
+          "Pizza Express",
+          "Thai Orchid"
+        ],
+        "dietary_restrictions": ["Vegetarian"]
+      },
+      "shopping": {
+        "preferred_stores": ["Whole Foods", "REI", "Apple Store"],
+        "online_retailers": ["Amazon", "Etsy"]
+      },
+      "entertainment": {
+        "streaming_services": ["Netflix", "Spotify"]
+      },
+      "activities": {
+        "hobbies": ["Yoga", "Hiking", "Photography", "Sight Seeing", "Beach Activities", "Skiing", "Surfing", "Scuba Diving"]
+      },
+      "travel": {
+        "preferred_airlines": ["Singapore Airlines", "Emirates", "Qatar Airways", "British Airways", "American Airlines", "Air India"],
+        "hotel_chains": ["Marriott", "Hilton", "Hyatt", "Conrad", "Aman", "Four Seasons", "Six Senses"],
+        "travel_style": ["Eco-friendly", "Cultural experiences", "Luxury"],
+        "travel_purpose": ["vacation", "Leisure"],
+        "duration": ["3 days", "5 days", "7 days"]
+      }
+    },
+    "profile": {
+      "country": "USA",
+      "birth_date": "23/06/1985",
+      "anniversary_date": "11/11/2010"
+    },
+    "country": "USA"
   }
 }

@@ -257,21 +257,25 @@ def set_custom_css():
 def render_sidebar():
     with st.sidebar:
         st.image(LOGO_PATH, width=300)
-        #st.markdown('<div class="oneliner">Your personalized AI travel companion, simplifying your journeys with tailored recommendations and seamless support</div>', unsafe_allow_html=True)
 
         st.header("Quick Links")
         
-        # if st.button("View Itinerary"):
-        #     st.write("Your itinerary will be displayed here.")
-        st.sidebar.button("Chat", on_click=set_page, args=("chat",))
+        if st.button("Home"):
+            st.session_state.page = "chat"
+            st.rerun()
 
-        # Add the new Flight Search button
-        st.sidebar.button("Flight Search", on_click=set_page, args=("flight_search",))
+        # if st.button("Flight Search"):
+        #     st.session_state.page = "flight_search"
+        #     st.rerun()
         
-        st.sidebar.button("Emergency Contacts", on_click=set_page, args=("emergency_contacts",))
-        # Add the new Image Search button
-        st.sidebar.button("Search by Image", on_click=set_page, args=("image_search",))
-        # Mode selection in sidebar
+        if st.button("Emergency Contacts"):
+            st.session_state.page = "emergency_contacts"
+            st.rerun()
+
+        if st.button("Search by Image"):
+            st.session_state.page = "image_search"
+            st.rerun()
+
         st.title("Mode Selection")
         mode_options = ["Standard", "Special (Voice Assisted)"]
         selected_mode = st.radio("Choose Mode", mode_options, index=0 if st.session_state.mode == "standard" else 1)
@@ -281,15 +285,8 @@ def render_sidebar():
         else:
             st.session_state.mode = "special"
 
-        # Display current mode
         st.write(f"Current Mode: {st.session_state.mode.capitalize()}")
                 
-        # if st.button("Manage Past Trips"):
-        #     add_trip_ui("past_trips")
-        
-        # if st.button("Manage Upcoming Trips"):
-        #     add_trip_ui("upcoming_trips")
-        
         if st.button("Logout"):
             from auth import logout
             logout()

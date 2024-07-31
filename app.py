@@ -14,6 +14,8 @@ def main():
     init_session_state()
     if "mode" not in st.session_state:
         st.session_state.mode = DEFAULT_MODE    
+    if "page" not in st.session_state:
+        st.session_state.page = "chat"
     
     # Bypass login or handle normal login
     if BYPASS_LOGIN and not st.session_state.logged_in:
@@ -35,8 +37,8 @@ def main():
             elif st.session_state.page == "flight_search":
                 flight_search_page()
             elif st.session_state.page == "image_search":
-                image_search_page()  # Add the new image search page
-            elif st.session_state.page == "chat" or st.session_state.page == "":
+                image_search_page()
+            elif st.session_state.page == "chat":
                 if st.session_state.mode == "standard":
                     start_chat()
                 else:  # special mode

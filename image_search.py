@@ -231,34 +231,39 @@ def image_search_page():
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png", "webp"])
     
     if uploaded_file is not None:
-        try:
+        st.image(uploaded_file, caption='Uploaded Image.', use_column_width=True)
+        
+        if st.button("Analyze Image"):
+            with st.spinner('Analyzing image...'):
+                base64_image = encode_image(uploaded_file)
+                session = boto3.Session(
+                    aws_access_key_id=AWS_ACCESS_KEY_ID,
+                    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                    aws_session_token=AWS_SESSION_TOKEN,
+                    region_name=AWS_REGION
+                )
+                bedrock = session.client('bedrock-runtime')
+                response = analyze_image(bedrock, base64_image)
+                
+                format_analysis_response(response)
 
-            st.image(uploaded_file, caption='Uploaded Image.', use_column_width=True)
-            
-            if st.button("Analyze Image"):
-                with st.spinner('Analyzing image...'):
-                    base64_image = encode_image(uploaded_file)
-
-                    session = boto3.Session(
-                            aws_access_key_id=AWS_ACCESS_KEY_ID,
-                            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                            aws_session_token=AWS_SESSION_TOKEN,  # Add this line
-                            region_name=AWS_REGION
-                        )
-                    bedrock = session.client('bedrock-runtime')
-                    response = analyze_image(bedrock, base64_image)
-                    # Display raw response
-                    #st.subheader("Raw Response from Model")
-                    #st.code(response)
-                    #logger.debug("res",response)
-                    format_analysis_response(response)
-
-  
-
-        except Exception as e:
-            logger.error(f"Error opening or processing the image: {str(e)}")
-            st.error(f"Error opening or processing the image. Please try another image. Error: {str(e)}")
-
+                if st.button("Plan a Trip to This Location"):
+                    chat_message = f"I've found an interesting location: {response['identified_location']}. Here's some information about it:\n\n"
+                    chat_message += f"• Overview: {response['main_elements']['overall_scene']}\n"
+                    chat_message += f"• Historical Significance: {response['historical_info']}\n"
+                    chat_message += f"• Cultural Significance: {response['cultural_significance']}\n"
+                    chat_message += f"• Top Activities: {', '.join(response['tourist_activities'][:3])}\n"
+                    
+                    if 'chat_history' not in st.session_state:
+                        st.session_state.chat_history = []
+                    st.session_state.chat_history.append({"role": "assistant", "content": chat_message})
+                    
+                    st.session_state.prompt_trip_planning = True
+                    st.session_state.last_identified_location = response['identified_location']
+                    st.session_state.page = "chat"
+                    
+                    st.success("Great! Let's plan your trip. Click on the 'Chat' button in the sidebar to start planning.")
 
 if __name__ == "__main__":
     image_search_page()
+    
