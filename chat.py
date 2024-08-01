@@ -1,7 +1,7 @@
 import streamlit as st
-from config import API_MODE, USE_GOOGLE_MAPS, LOGO_PATH
-from api_client import invoke_model, initialize_api_client, transcribe_audio, synthesize_speech
-from map_utils import extract_locations_llm, create_map, extract_place_info_llm
+from config import API_MODE, USE_GOOGLE_MAPS, LOGO_PATH, IS_PRODUCTION
+from api_client import invoke_model, initialize_api_client, transcribe_audio, synthesize_speech,generate_llm_reviews
+from map_utils import extract_locations_llm, create_map, extract_place_info_llm, get_random_local_photo, create_aws_location_map,create_aws_location_map_embed
 from ui_components import set_custom_carousel_css
 from streamlit_folium import folium_static
 import folium
@@ -10,6 +10,8 @@ from google_reviews import get_hotel_reviews_summary, get_place_photo
 import json
 import logging
 from PIL import Image
+import io
+from io import BytesIO
 import sounddevice as sd
 import soundfile as sf
 import numpy as np
@@ -232,57 +234,21 @@ def display_image_carousel(photos, hotel_name):
                 st.session_state[f"image_index_{hotel_name}"] = (image_index + 1) % len(photos)
                 st.experimental_rerun()
 
-def display_map_and_reviews():
-    st.header("Location Overview")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.subheader("Suggested Locations")
-        for i, loc in enumerate(st.session_state.locations):
-            st.button(loc, key=f"location_{i}", on_click=select_location, args=(i,))
-    
-    with col2:
-        st.subheader("Interactive Map")
-        m = create_map(st.session_state.locations)
-        
-        if m:
-            try:
-                if st.session_state.selected_location is not None:
-                    selected_loc = st.session_state.locations[st.session_state.selected_location]
-                    for marker in m._children.values():
-                        if isinstance(marker, folium.Marker):
-                            if marker.options.get('index') == st.session_state.selected_location:
-                                marker.add_child(folium.Popup(selected_loc, max_width=300))
-                                coordinates = marker.location
-                                st.write(f"Debug - Selected coordinates: {coordinates}")
-                                if coordinates and len(coordinates) == 2:
-                                    m.location = coordinates
-                                    m.zoom_start = 10
-                                else:
-                                    st.warning(f"Invalid coordinates for {selected_loc}: {coordinates}")
-                                break
-                    else:
-                        st.warning(f"No marker found for selected location: {selected_loc}")
-
-                folium_static(m)
-                
-                st.info("💡 Tip: Click on a location name to highlight it on the map.")
-                
-            except Exception as e:
-                st.error(f"Error displaying map: {str(e)}")
-                st.error("An error occurred while displaying the map. Please try again.")
-        else:
-            st.warning("Unable to create map for the specified locations. Please verify the location names.")
-    
+def display_reviews():
     # Reviews section
     st.header("Location Reviews and Insights")
     selected_hotel = st.selectbox("Select a hotel to view detailed reviews", st.session_state.locations)
     if selected_hotel:
-        reviews = get_hotel_reviews_summary(selected_hotel, st.session_state.api_client)
+        if IS_PRODUCTION:
+            reviews = generate_llm_reviews(selected_hotel, selected_hotel)
+        else:
+            reviews = get_hotel_reviews_summary(selected_hotel, st.session_state.api_client, location=selected_hotel)
         if reviews:
                 # Display image carousel
-            display_image_carousel(reviews.get('photos', []), reviews['name'])
+            if IS_PRODUCTION:
+                display_image_carousel_local(5, reviews['name'])  # Display 5 random local images
+            else:
+                display_image_carousel(reviews.get('photos', []), reviews['name'])
 
             col1, col2, col3 = st.columns([2,1,1])
             with col1:
@@ -310,6 +276,138 @@ def display_map_and_reviews():
         else:
             st.warning("No reviews found for this Location. It might be a new or less popular accommodation.")
 
+def display_map_and_reviews():
+    st.header("Location Overview")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # st.subheader("Suggested Locations")
+        for i, loc in enumerate(st.session_state.locations):
+            st.button(loc, key=f"location_{i}", on_click=select_location, args=(i,))
+    
+    with col2:
+        # st.subheader("Interactive Map")
+        if IS_PRODUCTION:
+            content_type, map_data = create_aws_location_map_embed(st.session_state.locations)
+            logger.info(f"content_type_{content_type}")
+            logger.info(f"map_data_{map_data}")
+        else:
+            map_data = create_map(st.session_state.locations)
+            
+        if map_data:
+            if IS_PRODUCTION:
+                #content_type, map_data = create_aws_location_map_embed(st.session_state.locations)
+                   if content_type and map_data:
+                        st.components.v1.html(map_data.decode('utf-8'), height=400)
+                   else:
+                        st.error("Failed to load the map. Please try again later.")
+
+                # content_type, image_data = create_aws_location_map(st.session_state.locations)
+                # if image_data:
+                #     try:
+                #         st.text(f"Response Content Type: {content_type}")
+                #         st.text(f"Image Data Length: {len(image_data)} bytes")
+
+                #         # Save the raw response to a file
+                #         with open("aws_map_response_raw.bin", "wb") as f:
+                #             f.write(image_data)
+                #         st.success("Raw response saved as 'aws_map_response_raw.bin'")
+
+                #         # Try to open the image using Pillow
+                #         image = Image.open(io.BytesIO(image_data))
+                        
+                #         # Display the image using Streamlit
+                #         st.image(image, caption="Map from AWS Location Service", use_column_width=True)
+                #         st.info("💡 This is a static map generated using AWS Location Service.")
+                        
+                #         # Also save the image for manual inspection
+                #         image.save("streamlit_displayed_map.png")
+                #         st.success("Map image also saved as 'streamlit_displayed_map.png' for manual inspection.")
+                #     except Exception as e:
+                #         st.error(f"Error processing or displaying map: {str(e)}")
+                #         st.error("Please check the 'aws_map_response_raw.bin' file manually to inspect the raw data.")
+                        
+                #         # Try to display the raw bytes as a PNG
+                #         image_base64 = base64.b64encode(image_data).decode()
+                #         st.markdown(f'<img src="data:image/png;base64,{image_base64}" alt="Map Image" style="width:100%; max-width:800px; height:auto;">', unsafe_allow_html=True)
+            else:
+
+                try:
+                    if st.session_state.selected_location is not None:
+                        selected_loc = st.session_state.locations[st.session_state.selected_location]
+                        for marker in map_data._children.values():
+                            if isinstance(marker, folium.Marker):
+                                if marker.options.get('index') == st.session_state.selected_location:
+                                    marker.add_child(folium.Popup(selected_loc, max_width=300))
+                                    coordinates = marker.location
+                                    st.write(f"Debug - Selected coordinates: {coordinates}")
+                                    if coordinates and len(coordinates) == 2:
+                                        map_data.location = coordinates
+                                        map_data.zoom_start = 10
+                                    else:
+                                        st.warning(f"Invalid coordinates for {selected_loc}: {coordinates}")
+                                    break
+                        else:
+                            st.warning(f"No marker found for selected location: {selected_loc}")
+
+                    folium_static(map_data)
+                    
+                    st.info("💡 Tip: Click on a location name to highlight it on the map.")
+                    
+                except Exception as e:
+                    st.error(f"Error displaying map: {str(e)}")
+                    st.error("An error occurred while displaying the map. Please try again.")
+        else:
+            st.warning("Unable to create map for the specified locations. Please verify the location names.")
+    
+
+
+def display_image_carousel_local(num_photos, hotel_name):
+    if num_photos <= 0:
+        st.write("No photos available for this location.")
+        return
+
+    # Apply custom CSS
+    set_custom_carousel_css()
+
+    # Initialize session state for this hotel if not exists
+    if f"image_index_{hotel_name}" not in st.session_state:
+        st.session_state[f"image_index_{hotel_name}"] = 0
+
+    image_index = st.session_state[f"image_index_{hotel_name}"]
+    
+    # Create a container for the image and buttons
+    with st.container():
+        # Display current image
+        with st.spinner("Loading image..."):
+            image_data = get_random_local_photo()
+            if image_data:
+                st.markdown(f"""
+                <div class="image-container">
+                    <img src="data:image/jpeg;base64,{image_data}">
+                </div>
+                <p style="text-align: center;">Image {image_index + 1} of {num_photos}</p>
+                """, unsafe_allow_html=True)
+            else:
+                st.write("Failed to load image.")
+
+        # Use a form for the buttons
+        with st.form(key=f"nav_form_{hotel_name}"):
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                prev_button = st.form_submit_button("Previous")
+            with col2:
+                next_button = st.form_submit_button("Next")
+            
+            # Handle button clicks
+            if prev_button:
+                st.session_state[f"image_index_{hotel_name}"] = (image_index - 1) % num_photos
+                st.experimental_rerun()
+            elif next_button:
+                st.session_state[f"image_index_{hotel_name}"] = (image_index + 1) % num_photos
+                st.experimental_rerun()
+
 def display_follow_up_question():
     context = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state.chat_history[-5:]])
     follow_up_prompt = f"""You are a Travel Assistant Chatbot. You dont need to introduce yourself. Based on the following conversation context, generate a relevant follow-up question that continues the discussion about the mentioned locations or the user's travel plans. The question should be specific to the conversation and encourage further engagement:
@@ -336,7 +434,7 @@ def start_chat():
         icon = Image.open("images/icon.png")
         
         # Developer mode toggle
-        developer_mode = st.sidebar.checkbox("Developer Mode")
+        #developer_mode = st.sidebar.checkbox("Developer Mode")
         
         # Display welcome message every time
         welcome_message = f"Welcome back, {st.session_state.username}! How can I assist you with your travel plans today?"
@@ -384,15 +482,23 @@ def start_chat():
                 st.markdown(message["content"])
         
         # Check if we need to prompt for trip planning
-        if st.session_state.get('prompt_trip_planning', False):
-            location = st.session_state.get('last_identified_location', 'the location you found')
-            prompt = f"Great! I'd be happy to help you plan a trip to {location}. What would you like to know about planning a trip there? For example, I can help with information about accommodations, transportation, attractions, or the best time to visit."
+        # Check for prompt_trip_planning flag
+        # if st.session_state.get('prompt_trip_planning', False):
+        #     location = st.session_state.get('last_identified_location', 'the location you found')
+        #     prompt = f"Great! I'd be happy to help you plan a trip to {location}. What would you like to know about planning a trip there? For example, I can help with information about accommodations, transportation, attractions, or the best time to visit."
             
-            with st.chat_message("assistant", avatar=icon):
-                st.markdown(prompt)
+        #     with st.chat_message("assistant", avatar=icon):
+        #         st.markdown(prompt)
             
-            st.session_state.chat_history.append({"role": "assistant", "content": prompt})
-            st.session_state.prompt_trip_planning = False
+        #     st.session_state.chat_history.append({"role": "assistant", "content": prompt})
+            
+        #     # Reset the flags
+        #     st.session_state.prompt_trip_planning = False
+        
+        # # Display existing chat history
+        # for message in st.session_state.chat_history:
+        #     with st.chat_message(message["role"], avatar=icon if message["role"] == "assistant" else None):
+        #         st.markdown(message["content"])
         
         # Chat input
         user_input = st.chat_input("What can TravelEase assist you with today?")
@@ -410,8 +516,8 @@ def start_chat():
                     context = get_chat_context()
                     
                     # Display debug information if in developer mode
-                    if developer_mode:
-                        display_debug_info(context)
+                    # if developer_mode:
+                    #     display_debug_info(context)
 
                     full_response = invoke_model(user_input, st.session_state.api_client, st.session_state.user_profile, context=context)
                     
@@ -438,31 +544,35 @@ def start_chat():
                     
                     # Add error message to chat history
                     st.session_state.chat_history.append({"role": "assistant", "content": error_message})
-
-        # Map and location information
-        if st.session_state.locations:
-            st.markdown("### Location Information")
-            st.write("I've found some locations that might be relevant to your query.")
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("Show locations on map"):
-                    st.session_state.show_map = True
-            with col2:
-                if st.button("Continue without map"):
-                    st.session_state.show_map = False
-
-            if st.session_state.show_map:
-                display_map_and_reviews()
-
+                    
         # Display helper buttons and results
         if should_display_helper_buttons(st.session_state.place_info, st.session_state.chat_history[-1]["content"] if st.session_state.chat_history else ""):
             location = st.session_state.locations[0] if st.session_state.locations else "general"
             display_helper_buttons(location)
             display_button_results(location)
+        # Map and location information
+        if st.session_state.locations:
+            display_reviews()
+            st.markdown("### Location Information")
+            st.write("I've found some locations that might be relevant to your query.")
+            if st.button("Show locations on map"):
+                st.session_state.show_map = True
+            # col1, col2 = st.columns(2)
+            # with col1:
+            #     if st.button("Show locations on map"):
+            #         st.session_state.show_map = True
+            # with col2:
+            #     if st.button("Continue without map"):
+            #         st.session_state.show_map = False
+                
+            if st.session_state.show_map:
+                display_map_and_reviews()
+
+
         
         # Display debug information if in developer mode
-        if developer_mode:
-            display_debug_info(get_chat_context())
+        # if developer_mode:
+        #     display_debug_info(get_chat_context())
 
     else:
         st.warning(f"TravelEase initialization failed. Please check your {API_MODE.capitalize()} credentials and try again.")

@@ -35,6 +35,11 @@ VOYAGE_PROMPT = """You are TravelEase, an advanced AI-powered travel assistant. 
    - Dining, entertainment, and shopping recommendations
    - Give preference to flights, hotels and activities where users credit card gives offers currenlty. You can use your knowledgebase to find the offers
    - Highlight in bold, the offers and benefits based on the users credit card and reward points
+   - Recommend the optimal time of day to visit, considering the opening and closing hours of the relevant location, if applicable.
+   - Always emphasize the distance from the location to the nearest airport and train station.
+   - Highlight the nearest public transportation options, including timings and ticketing details.
+   - Indicate the location of the closest public restrooms.
+
 
 4. Offer practical assistance with:
    - Itinerary planning
@@ -83,3 +88,14 @@ BYPASS_LOGIN = os.getenv('BYPASS_LOGIN', 'False').lower() == 'true'
 BYPASS_USERNAME = os.getenv('BYPASS_USERNAME', 'renjith')
 EMERGENCY_SERVICES = ['Police', 'Hospital', 'Fire Department', 'Embassy']
 USE_MOCK_DATA = os.getenv('USE_MOCK_DATA', 'False').lower() == 'true'
+# Environment flag
+IS_PRODUCTION = os.getenv('IS_PRODUCTION', 'False').lower() == 'true'
+
+# AWS Location Service configuration
+AWS_LOCATION_SERVICE_PLACE_INDEX = os.getenv('AWS_LOCATION_SERVICE_PLACE_INDEX')
+
+# Local photos directory
+LOCAL_PHOTOS_DIR = 'photos'
+# AWS Location Service configuration
+AWS_LOCATION_SERVICE_MAP_NAME = os.getenv('AWS_LOCATION_SERVICE_MAP_NAME')
+AWS_MAP_API_KEY= os.getenv('AWS_MAP_API_KEY')

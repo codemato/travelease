@@ -23,7 +23,7 @@ def init_session_state():
     if "mode" not in st.session_state:
         st.session_state.mode = DEFAULT_MODE
     if "page" not in st.session_state:
-        st.session_state.page = "chat"  # Default page is chat
+        st.session_state.page = "image_search"  # Default page is chat
         
 def authenticate(username, password):
     try:
@@ -39,7 +39,7 @@ def authenticate(username, password):
         return False
 
 def login():
-    st.image(LOGO_PATH, width=200)
+    st.image(LOGO_PATH, width=150)
     st.subheader("Login")
 
     username = st.text_input("Username")

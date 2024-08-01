@@ -18,7 +18,7 @@ def set_custom_css():
     .logo_title{
         font-family: "Chase";
         font-weight: bold;
-        height: 300px
+        height: 150px
     }
     .horizontal-layout {
         display: flex;
@@ -31,7 +31,7 @@ def set_custom_css():
         justify-content: flex-start;
     }
     .logo {
-        width: 200px;
+        width: 150px;
     }
     .bot_title {
         font-size: 26px;
@@ -251,16 +251,25 @@ def set_custom_css():
     .st-emotion-cache-1ghhuty {
         background-color: rgb(59 196 217);
     }
+    .stRadio {
+      margin-top: -45px !important;     
+    }
     </style>
     """, unsafe_allow_html=True)
 
 def render_sidebar():
     with st.sidebar:
-        st.image(LOGO_PATH, width=300)
+        st.image(LOGO_PATH, use_column_width=True)
+ 
 
-        st.header("Quick Links")
+        st.header("")
         
-        if st.button("Home"):
+
+        if st.button("Search by Image"):
+            st.session_state.page = "image_search"
+            st.rerun()
+       
+        if st.button("Chat"):
             st.session_state.page = "chat"
             st.rerun()
 
@@ -272,27 +281,24 @@ def render_sidebar():
             st.session_state.page = "emergency_contacts"
             st.rerun()
 
-        if st.button("Search by Image"):
-            st.session_state.page = "image_search"
-            st.rerun()
 
         st.title("Mode Selection")
-        mode_options = ["Standard", "Special (Voice Assisted)"]
-        selected_mode = st.radio("Choose Mode", mode_options, index=0 if st.session_state.mode == "standard" else 1)
+        mode_options = ["Standard", "Voice Assisted"]
+        selected_mode = st.radio("", mode_options, index=0 if st.session_state.mode == "standard" else 1)
         
         if selected_mode == "Standard":
             st.session_state.mode = "standard"
         else:
             st.session_state.mode = "special"
 
-        st.write(f"Current Mode: {st.session_state.mode.capitalize()}")
+        #st.write(f"Current Mode: {st.session_state.mode.capitalize()}")
                 
-        if st.button("Logout"):
-            from auth import logout
-            logout()
+        # if st.button("Logout"):
+        #     from auth import logout
+        #     logout()
         
-        st.write(f"Logged in as {st.session_state.username}")
-        st.write(f"API Mode: {API_MODE.capitalize()}")
+       #st.write(f"Logged in as {st.session_state.username}")
+        #st.write(f"API Mode: {API_MODE.capitalize()}")
         
 def set_page(page):
     st.session_state.page = page
