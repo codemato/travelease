@@ -326,3 +326,60 @@ def synthesize_speech(text):
     else:
         logger.error("Speech synthesis failed")
         return None
+    
+
+def generate_llm_reviews(hotel_name, location):
+    try:
+        session = boto3.Session()
+        bedrock_client = session.client('bedrock-runtime')
+
+        prompt = f"""
+        Generate fictional aggregated reviews for the hotel "{hotel_name}" in {location}. 
+        The response should be in the following JSON format:
+
+        {{
+            "name": "{hotel_name}",
+            "rating": float,
+            "summary": {{
+                "summary": "string",
+                "positive_points": ["string", "string", "string"],
+                "negative_points": ["string", "string", "string"],
+                "score": float
+            }}
+        }}
+
+        Where:
+        - "rating" is a float between 1 and 5
+        - "summary" is a brief overview of the reviews
+        - "positive_points" and "negative_points" are lists of 3 points each
+        - "score" is a float between 1 and 5 representing an AI-generated score
+
+        Ensure the content is relevant to the hotel and location, and the reviews sound realistic.
+        """
+
+        body = json.dumps({
+            "anthropic_version": "bedrock-2023-05-31",
+            "max_tokens": 1000,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        })
+
+        response = bedrock_client.invoke_model(
+            body=body,
+            modelId=AWS_CLAUDE_MODEL_ID,
+            accept='application/json',
+            contentType='application/json'
+        )
+
+        response_body = json.loads(response.get('body').read())
+        reviews = json.loads(response_body['content'][0]['text'])
+
+        return reviews
+
+    except Exception as e:
+        logger.error(f"Error generating LLM reviews: {str(e)}")
+        return None

@@ -9,6 +9,8 @@ from io import BytesIO
 import boto3
 from config import AWS_ACCESS_KEY_ID, AWS_REGION, AWS_SECRET_ACCESS_KEY,AWS_SESSION_TOKEN
 from jsonschema import validate
+from streamlit_extras.switch_page_button import switch_page
+from api_client import invoke_model, initialize_api_client
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -68,7 +70,7 @@ def format_analysis_response(response):
     st.info(response['initial_thoughts'])
 
     # Call to Action
-    st.success("Ready to plan your trip? Check out our travel planning resources!")
+    #st.success("Ready to plan your trip? Check out our travel planning resources!")
     # if st.button("Start Planning"):
     #     st.button("Chat", on_click=set_page, args=("chat",))
 
@@ -225,40 +227,96 @@ def analyze_image(client, image_base64):
         logger.error(f"Error in analyze_image: {str(e)}")
         raise
 
+
 def image_search_page():
     st.title("Search by Image")
+
+    # Initialize API client if not already done
+    if "api_client" not in st.session_state or st.session_state.api_client is None:
+        st.session_state.api_client = initialize_api_client()
+
+    # Initialize chat history if not present
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+
+    # Initialize image analysis state
+    if "analysis_result" not in st.session_state:
+        st.session_state.analysis_result = None
 
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png", "webp"])
     
     if uploaded_file is not None:
         st.image(uploaded_file, caption='Uploaded Image.', use_column_width=True)
         
-        if st.button("Analyze Image"):
-            with st.spinner('Analyzing image...'):
-                base64_image = encode_image(uploaded_file)
-                session = boto3.Session()
-                bedrock = session.client('bedrock-runtime')
-                response = analyze_image(bedrock, base64_image)
-                
-                format_analysis_response(response)
+        analyze_button = st.button("Analyze Image")
+        
+        if analyze_button or st.session_state.analysis_result is not None:
+            if analyze_button:
+                with st.spinner('Analyzing image...'):
+                    base64_image = encode_image(uploaded_file)
+                    session = boto3.Session(
+                        aws_access_key_id=AWS_ACCESS_KEY_ID,
+                        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                        aws_session_token=AWS_SESSION_TOKEN,
+                        region_name=AWS_REGION
+                    )
+                    bedrock = session.client('bedrock-runtime')
+                    st.session_state.analysis_result = analyze_image(bedrock, base64_image)
 
-                if st.button("Plan a Trip to This Location"):
-                    chat_message = f"I've found an interesting location: {response['identified_location']}. Here's some information about it:\n\n"
-                    chat_message += f"• Overview: {response['main_elements']['overall_scene']}\n"
-                    chat_message += f"• Historical Significance: {response['historical_info']}\n"
-                    chat_message += f"• Cultural Significance: {response['cultural_significance']}\n"
-                    chat_message += f"• Top Activities: {', '.join(response['tourist_activities'][:3])}\n"
-                    
-                    if 'chat_history' not in st.session_state:
-                        st.session_state.chat_history = []
-                    st.session_state.chat_history.append({"role": "assistant", "content": chat_message})
-                    
-                    st.session_state.prompt_trip_planning = True
-                    st.session_state.last_identified_location = response['identified_location']
-                    st.session_state.page = "chat"
-                    
-                    st.success("Great! Let's plan your trip. Click on the 'Chat' button in the sidebar to start planning.")
+            if st.session_state.analysis_result:
+                with st.expander("Image Analysis Results", expanded=True):
+                    format_analysis_response(st.session_state.analysis_result)
+                st.success("Ready to plan your trip? Click the button below and see the magic!")
+
+                if st.button(f"Plan a trip to {st.session_state.analysis_result['identified_location']}"):
+                    with st.spinner("Generating travel plan..."):
+                        chat_message = f"I'd like to plan a trip to {st.session_state.analysis_result['identified_location']}. Can you provide information on accommodations, transportation, attractions, and the best time to visit?"
+                        
+                        # Create context from recent chat history
+                        context = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state.chat_history[-5:]])
+                        
+                        # Generate AI response with context
+                        ai_response = invoke_model(chat_message, st.session_state.api_client, st.session_state.user_profile, context)
+                        
+                        # Add the chat message and AI response to chat history
+                        st.session_state.chat_history.append({"role": "user", "content": chat_message})
+                        st.session_state.chat_history.append({"role": "assistant", "content": ai_response})
+                        
+                        # Display the AI response
+                        st.markdown("### Trip Plan")
+                        st.write(ai_response)
+
+    # # Display chat interface (without the header)
+    # for message in st.session_state.chat_history:
+    #     with st.chat_message(message["role"]):
+    #         st.write(message["content"])
+
+    # Chat input
+    user_input = st.chat_input("Ask about the image or location...")
+
+    if user_input:
+        # Display user message
+        st.chat_message("user").write(user_input)
+        
+        # Add user message to chat history
+        st.session_state.chat_history.append({"role": "user", "content": user_input})
+
+        # Create context from recent chat history
+        context = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state.chat_history[-5:]])
+
+        # Generate AI response
+        with st.spinner("Thinking..."):
+            response = invoke_model(user_input, st.session_state.api_client, st.session_state.user_profile, context)
+            
+            # Display AI response
+            #st.chat_message("assistant").write(response)
+            
+            # Add AI response to chat history
+            st.session_state.chat_history.append({"role": "assistant", "content": response})
+            # # Display chat interface (without the header)
+            for message in st.session_state.chat_history:
+                with st.chat_message(message["role"]):
+                    st.write(message["content"])
 
 if __name__ == "__main__":
     image_search_page()
-    
