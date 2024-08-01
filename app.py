@@ -7,15 +7,16 @@ from user_profile import load_user_profile
 from emergency_services import emergency_contacts_page
 from flight_search import flight_search_page
 from image_search import image_search_page  # Import the new image_search_page function
+import json
 
 
 def main():
     st.set_page_config(page_title="TravelEase", page_icon=LOGO_PATH, layout="wide")
     init_session_state()
+
     if "mode" not in st.session_state:
         st.session_state.mode = DEFAULT_MODE    
-    if "page" not in st.session_state:
-        st.session_state.page = "chat"
+
     
     # Bypass login or handle normal login
     if BYPASS_LOGIN and not st.session_state.logged_in:

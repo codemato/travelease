@@ -256,11 +256,12 @@ def set_custom_css():
 
 def render_sidebar():
     with st.sidebar:
-        st.image(LOGO_PATH, width=300)
+        st.image(LOGO_PATH, use_column_width=True)
+ 
 
         st.header("Quick Links")
         
-        if st.button("Home"):
+        if st.button("Chat"):
             st.session_state.page = "chat"
             st.rerun()
 
